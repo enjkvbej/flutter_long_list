@@ -6,7 +6,7 @@ import '../model/feed_item.dart';
 
 
 Future api(int offset, int number) {
-  int total = 100;
+  int total = 50;
   List<FeedItem> list = List();
   Map<String, dynamic> result;
   FeedItem _getItem () {

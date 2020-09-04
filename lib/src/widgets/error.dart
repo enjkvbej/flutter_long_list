@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
-import '../store/long_list.dart';
+import '../store/long_list_provider.dart';
 
 class LongListError<T extends Clone<T>> extends StatelessWidget {
   final String id;
@@ -16,7 +16,7 @@ class LongListError<T extends Clone<T>> extends StatelessWidget {
         Text(
           '服务器出小差了，请重试',
           style: TextStyle(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.5),
             fontWeight: FontWeight.bold,
             fontSize: 13
           )

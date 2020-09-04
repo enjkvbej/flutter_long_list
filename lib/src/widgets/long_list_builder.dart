@@ -1,41 +1,46 @@
 import 'package:extended_list/extended_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_long_list/src/store/long_list_provider.dart';
 import './long_list.dart';
 
-class LongListBuilder extends StatelessWidget {
+class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
   final LongListMode mode;
   final int itemCount;
+  final LongListProvider<T> provider;
   final EdgeInsetsGeometry padding;
   final Axis scrollDirection;
+  final SliverGridDelegate gridDelegate;
   final ScrollController controller;
   final Function(BuildContext context, int index) child;
   final Widget sliverHead;
   const LongListBuilder({
     this.mode,
     @required this.itemCount,
+    @required this.provider,
     this.padding,
     this.scrollDirection,
     this.controller,
+    this.gridDelegate,
     this.child,
     this.sliverHead,
     Key key
   }) : super(key: key);
-
+  
+  getExtendedListDelegate() {
+    return ExtendedListDelegate(
+      lastChildLayoutTypeBuilder: (int index) => ((!provider.hasMore || provider.isLoading || provider.hasError)
+        && index == itemCount - 1)
+        ? LastChildLayoutType.fullCrossAxisExtent
+        : LastChildLayoutType.none
+    );
+  }
   @override
   Widget build(BuildContext context) {
     if (mode == LongListMode.grid) {
       return ExtendedGridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10.0,
-          mainAxisSpacing: 10.0,
-        ),
-        extendedListDelegate: ExtendedListDelegate(
-          lastChildLayoutTypeBuilder: (int index) => index == itemCount - 1
-              ? LastChildLayoutType.fullCrossAxisExtent
-              : LastChildLayoutType.none,
-        ),
+        gridDelegate: gridDelegate,
+        extendedListDelegate: getExtendedListDelegate(),
         padding: padding,
         scrollDirection: scrollDirection,
         shrinkWrap: true,
@@ -63,15 +68,8 @@ class LongListBuilder extends StatelessWidget {
               child,
               childCount: itemCount,
             ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10.0,
-            ),
-            extendedListDelegate: ExtendedListDelegate(
-              lastChildLayoutTypeBuilder: (int index) => index == itemCount - 1
-                  ? LastChildLayoutType.fullCrossAxisExtent
-                  : LastChildLayoutType.none,
-            ),
+            gridDelegate: gridDelegate,
+            extendedListDelegate: getExtendedListDelegate(),
           ),
         ],
       );

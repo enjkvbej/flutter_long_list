@@ -1,4 +1,8 @@
 import 'package:example/pages/grid_view.dart';
+import 'package:example/pages/sliver_grid_view.dart';
+import 'package:example/pages/sliver_list_view.dart';
+import 'package:example/widgets/grid_view.dart';
+import 'package:example/widgets/sliver_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_long_list/flutter_long_list.dart';
@@ -17,10 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider<LongListStore>(
-        create: (_) => LongListStore(),
-        child: MyHomePage(title: 'FlutterLongList demo')
-      ),
+      home: MyHomePage(title: 'FlutterLongList demo')
     );
   }
 }
@@ -36,8 +37,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext _context) {
+    return ChangeNotifierProvider<LongListStore>(
+        create: (_) => LongListStore(),
+        builder: (context, _) => Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -45,48 +48,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            MaterialButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(pageBuilder: (BuildContext context1,
-                      Animation animation, Animation secondaryAnimation) {
-                    return ChangeNotifierProvider<LongListProvider<FeedItem>>(
-                      create: (_) => LongListProvider<FeedItem>(store: context.read<LongListStore>()),
-                      child: ListViewDemo()
-                    );
-                  }),
-                );
-              },
-              color: Colors.grey,
-              height: 40,
-              child: Text(
-                'ListView'
-              )
-            ),
+            ListViewPage(),
             SizedBox(height: 20,),
-            MaterialButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(pageBuilder: (BuildContext context1,
-                      Animation animation, Animation secondaryAnimation) {
-                    return ChangeNotifierProvider<LongListProvider<FeedItem>>(
-                      create: (_) => LongListProvider<FeedItem>(store: context.read<LongListStore>()),
-                      child: GridViewDemo(),
-                    );
-                  }),
-                );
-              },
-              color: Colors.grey,
-              height: 40,
-              child: Text(
-                'GridView'
-              )
-            )
+            GridViewPage(),
+            SizedBox(height: 20,),
+            SliverGridViewPage(),
+            SizedBox(height: 20,),
+            SliverListViewPage(),
           ],
         ),
       ),
-    );
+    ));
   }
 }

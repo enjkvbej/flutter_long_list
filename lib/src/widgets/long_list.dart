@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import '../store/long_list.dart';
+import '../store/long_list_provider.dart';
 import './loading.dart';
 import './long_list_builder.dart';
 import './nomore.dart';
@@ -15,6 +15,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   final LongListMode mode;
   final EdgeInsetsGeometry padding;
   final ScrollController controller;
+  final SliverGridDelegate gridDelegate;
   final Axis scrollDirection;
   final Function(BuildContext context, LongListProvider<T> provider, String id,
       int index, T data) itemWidget;
@@ -26,6 +27,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
     this.mode = LongListMode.list,
     this.padding = const EdgeInsets.all(0.0),
     this.controller,
+    this.gridDelegate,
     this.scrollDirection = Axis.vertical,
     @required this.itemWidget,
     this.sliverHead,
@@ -75,8 +77,10 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
                 onRefresh: () => _onRefresh(_provider),
                 child: LongListBuilder(
                   mode: mode,
+                  provider: _provider,
                   controller: controller,
                   scrollDirection: scrollDirection,
+                  gridDelegate: gridDelegate,
                   padding: padding,
                   itemCount: (data.item2 || !data.item3) ? data.item1 + 1 : data.item1,
                   sliverHead: sliverHead,

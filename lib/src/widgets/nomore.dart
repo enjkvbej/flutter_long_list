@@ -9,11 +9,11 @@ class LongListNoMore extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.only(top: 80, bottom: 80),
+      padding: EdgeInsets.only(top: 40, bottom: 40),
       child: Text(
         init ? '暂无相关内容' : '已经到底了',
         style: TextStyle(
-          color: Colors.white.withOpacity(0.5),
+          color: Colors.black.withOpacity(0.5),
           fontWeight: FontWeight.bold,
           fontSize: 13
         )

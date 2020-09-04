@@ -27,7 +27,7 @@ class LongListLoading extends StatelessWidget {
   
   Widget loading() {
     return SizedBox(
-      child: Text('londing。。。')
+      child: Text('loading...')
     );
   }
 }
