@@ -5,8 +5,7 @@ import '../api/http.dart';
 import '../model/feed_item.dart';
 
 class ListViewDemo extends StatefulWidget {
-  final LongListStore store;
-  ListViewDemo({Key key, this.store}) : super(key: key);
+  ListViewDemo({Key key}) : super(key: key);
 
   @override
   _ListViewDemoState createState() => _ListViewDemoState();
@@ -47,7 +46,7 @@ class _ListViewDemoState extends State<ListViewDemo> {
 
   @override
   Widget build(BuildContext context) {
-    print('获取LongListStore${widget.store.list}');
+    print(Provider.of<LongListStore>(context).list);
     return Scaffold(
       body: LongList<FeedItem>(
         id: id,

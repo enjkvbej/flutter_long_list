@@ -68,7 +68,7 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
 
   addItems(List<T> data) {
     _list.addAll(data);
-    store.saveListById(_listConfig.id, _list);
+    store?.saveListById(_listConfig.id, _list);
     if (_listConfig.callback != null) {
       _listConfig.callback(_list);
     }
@@ -77,13 +77,13 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
   
   changeItem(String id, int index, T data) {
     _list[index] = data;
-    store.saveListById(_listConfig.id, _list);
+    store?.saveListById(_listConfig.id, _list);
     notifyListeners();
   }
 
   deleteItem(String id, int index) {
     _list.removeAt(index);
-    store.saveListById(_listConfig.id, _list);
+    store?.saveListById(_listConfig.id, _list);
     notifyListeners();
   }
 }

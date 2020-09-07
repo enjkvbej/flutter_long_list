@@ -47,6 +47,7 @@ class _SliverGridViewDemoState extends State<SliverGridViewDemo> {
 
   @override
   Widget build(BuildContext context) {
+    print(Provider.of<LongListStore>(context).list);
     return Scaffold(
       body: LongList<FeedItem>(
         id: id,

@@ -44,6 +44,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
     if (notification.metrics.pixels >=
         notification.metrics.maxScrollExtent - 100) {
       if (provider.hasMore && !provider.hasError && !provider.isLoading) {
+         print('loadmore');
         provider.loadMore(id);
       }
     }
@@ -51,6 +52,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   }
 
   Future _onRefresh(LongListProvider<T> provider) async{
+    print('refresh');
     await provider.refresh(id);
   }
 

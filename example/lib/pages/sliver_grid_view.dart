@@ -9,14 +9,15 @@ class SliverGridViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialButton(
+    LongListStore longListStore = context.watch<LongListStore>();
+    return MaterialButton(
       onPressed: () {
         Navigator.push(
           context,
           PageRouteBuilder(pageBuilder: (_,
               Animation animation, Animation secondaryAnimation) {
             return ChangeNotifierProvider<LongListProvider<FeedItem>>(
-              create: (_) => LongListProvider<FeedItem>(store: context.read<LongListStore>()),
+              create: (_) => LongListProvider<FeedItem>(store: longListStore),
               child: SliverGridViewDemo(),
             );
           }),

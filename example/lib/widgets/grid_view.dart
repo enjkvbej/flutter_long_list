@@ -46,8 +46,7 @@ class _GridViewDemoState extends State<GridViewDemo> {
 
   @override
   Widget build(BuildContext context) {
-    // print(Provider.of<LongListStore>(context, listen: false).list);
-    // print(context.read<LongListStore>().list['list_view'].length);
+    print(Provider.of<LongListStore>(context).list);
     return Scaffold(
       body: LongList<FeedItem>(
         id: id,
