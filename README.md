@@ -22,9 +22,46 @@ If you like this package, consider supporting it by giving it a star on [Github]
 How to create a GridView By flutter_long_list:
 1. use ChangeNotifierProvider
 ```
-   ChangeNotifierProvider<LongListProvider<T>>(
-     create: (_) => LongListProvider<T>(),
-     child: GridViewDemo(),
-   );
+ ChangeNotifierProvider<LongListProvider<T>>(
+   create: (_) => LongListProvider<T>(),
+   child: GridViewDemo(),
+ );
 ```
-2. init GridView
+2. init GridView 
+>> #### ·param id: list custom id if you use globalStore is required.
+>> #### ·param pageSize: list load more need pagesize to request.
+>> #### ·param request: list load more function, offset = page * pageSize(page initialValue = 0).
+```
+@override
+initState() {
+  longListProvider.init(
+    id: id,
+    pageSize: 5,
+    request: (int offset) async => await _getList(offset),
+  );
+  // your code...
+}
+```
+3. render GridView  
+>> #### ·param id: list custom id you have inited.  
+
+>> #### ·param gridDelegate: gridView property.  
+  
+>> #### ·param mode: enum LongListMode {list, grid, sliver_list, sliver_grid}
+
+>> #### ·param itemWidget: (BuildContext context, LongListProvider<T> provider, String id, int index, T data) { return your custom widget}
+
+```
+LongList<T>(
+  id: id,
+  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2,
+    crossAxisSpacing: 10.0,
+    mainAxisSpacing: 10.0,
+  ),
+  padding: EdgeInsets.only(left: 10, right: 10),
+  mode: LongListMode.grid,
+  itemWidget: itemWidget,
+)
+```
+Then you have finished to create a LongList GridView Widget easily!
