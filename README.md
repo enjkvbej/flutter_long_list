@@ -27,10 +27,10 @@ How to create a GridView By flutter_long_list:
    child: GridViewDemo(),
  );
 ```
-2. init GridView 
->> #### ·param id: list custom id if you use globalStore is required.
->> #### ·param pageSize: list load more need pagesize to request.
->> #### ·param request: list load more function, offset = page * pageSize(page initialValue = 0).
+2. init GridView<br>
+·param id: list custom id if you use globalStore is required.<br>
+·param pageSize: list load more need pagesize to request.<br>
+·param request: list load more function, offset = page * pageSize(page initialValue = 0).<br>
 ```
 @override
 initState() {
@@ -42,14 +42,11 @@ initState() {
   // your code...
 }
 ```
-3. render GridView  
->> #### ·param id: list custom id you have inited.  
-
->> #### ·param gridDelegate: gridView property.  
-  
->> #### ·param mode: enum LongListMode {list, grid, sliver_list, sliver_grid}
-
->> #### ·param itemWidget: (BuildContext context, LongListProvider<T> provider, String id, int index, T data) { return your custom widget}
+3. render GridView<br>
+·param id: list custom id you have inited.<br>
+·param gridDelegate: gridView property.<br>
+·param mode: enum LongListMode {list, grid, sliver_list, sliver_grid}<br>
+·param itemWidget: (BuildContext context, LongListProvider<T> provider, String id, int index, T data) { return your custom widget}<br>
 
 ```
 LongList<T>(
