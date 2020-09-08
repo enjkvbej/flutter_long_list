@@ -23,36 +23,44 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get hasMore => _hasMore;
   bool get hasError => _hasError;
-  /// 初始化 
-  /// id: 唯一标识 
+
+  /// 初始化
+  /// id: 唯一标识
   /// request function (offset, num) => list or error
-  /// callback: 数据自定义事件 
-  init({@required String id, @required int pageSize, @required Function request, Function callback}) async{
-    _listConfig = LongListConfig(id: id, pageSize: pageSize, request: request, callback: callback);
+  /// callback: 数据自定义事件
+  init(
+      {@required String id,
+      @required int pageSize,
+      @required Function request,
+      Function callback}) async {
+    _listConfig = LongListConfig(
+        id: id, pageSize: pageSize, request: request, callback: callback);
     await _getList(init: true);
   }
 
-  _getList({init = false}) async{
+  _getList({init = false}) async {
     // 使用providder不要在initState执行notifyListeners()
     if (!init) {
       _isLoading = true;
       notifyListeners();
     }
     final result = await _listConfig.request(_listConfig.offset);
-    if (result['list'] != null && result['total'] != null && result['error'] == null) {
+    if (result['list'] != null &&
+        result['total'] != null &&
+        result['error'] == null) {
       _listConfig.total = result['total'];
       if (result['total'] == result['list'].length + _list.length) {
         _hasMore = false;
       }
       _isLoading = false;
-      addItems(result['list']);
+      _addItems(result['list']);
     } else {
       _hasError = true;
       _isLoading = false;
       notifyListeners();
     }
   }
-  
+  /// 刷新
   refresh(String id) async {
     _listConfig.offset = 0;
     _hasMore = true;
@@ -60,13 +68,13 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
     _list.clear();
     await _getList();
   }
-
+  /// 刷新
   loadMore(String id) async {
     _listConfig.offset += _listConfig.pageSize;
     await _getList();
   }
-
-  addItems(List<T> data) {
+  
+  _addItems(List<T> data) {
     _list.addAll(data);
     store?.saveListById(_listConfig.id, _list);
     if (_listConfig.callback != null) {
@@ -74,13 +82,13 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
     }
     notifyListeners();
   }
-  
+  /// 修改
   changeItem(String id, int index, T data) {
     _list[index] = data;
     store?.saveListById(_listConfig.id, _list);
     notifyListeners();
   }
-
+  /// 删除
   deleteItem(String id, int index) {
     _list.removeAt(index);
     store?.saveListById(_listConfig.id, _list);

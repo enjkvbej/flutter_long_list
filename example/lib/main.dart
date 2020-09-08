@@ -16,10 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Provider<LongListStore>(create: (_) => LongListStore()),
-        ChangeNotifierProvider(
-          create: (_) => LongListStore(),
-        )
+        Provider<LongListStore>(create: (_) => LongListStore()),
       ],
       builder: (context, child) => MaterialApp(
         title: 'FlutterLongList Demo',
