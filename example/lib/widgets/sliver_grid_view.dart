@@ -63,11 +63,12 @@ class _SliverGridViewDemoState extends State<SliverGridViewDemo> {
           delegate: SliverCustomHeaderDelegate(
             title: '哪吒之魔童降世',
             collapsedHeight: 40,
-            expandedHeight: 300,
+            expandedHeight: 200,
             paddingTop: MediaQuery.of(context).padding.top,
             coverImgUrl: 'https://img.zcool.cn/community/01c6615d3ae047a8012187f447cfef.jpg@1280w_1l_2o_100sh.jpg'
           ),
         ),
+        sliverHeadHeight: 200,
         itemWidget: itemWidget,
       )
     );
@@ -89,7 +90,7 @@ class _SliverGridViewDemoState extends State<SliverGridViewDemo> {
               provider.deleteItem(id, index);
             },
             child: Text(
-              'delete'
+              'delete${index}'
             )
           ),
           GestureDetector(

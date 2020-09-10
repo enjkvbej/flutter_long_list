@@ -78,7 +78,7 @@ class _GridViewDemoState extends State<GridViewDemo> {
               provider.deleteItem(id, index);
             },
             child: Text(
-              'delete'
+              'delete${index}'
             )
           ),
           GestureDetector(

@@ -12,6 +12,7 @@ class LongListError<T extends Clone<T>> extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           '服务器出小差了，请重试',

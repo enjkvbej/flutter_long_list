@@ -62,6 +62,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
             coverImgUrl: 'https://img.zcool.cn/community/01c6615d3ae047a8012187f447cfef.jpg@1280w_1l_2o_100sh.jpg'
           ),
         ),
+        sliverHeadHeight: 300,
         itemWidget: itemWidget,
       )
     );
@@ -83,7 +84,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
               provider.deleteItem(id, index);
             },
             child: Text(
-              'delete'
+              'delete${index}'
             )
           ),
           GestureDetector(

@@ -13,9 +13,16 @@ class ListViewDemo extends StatefulWidget {
 
 class _ListViewDemoState extends State<ListViewDemo> {
   String id = 'list_view';
+  ScrollController scrollController = new ScrollController();
   @override
   initState() {
     _init();
+    // 初始化触发滚动 上报数据
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(Duration(milliseconds: 2000), () {
+        scrollController.position.didEndScroll();
+      });
+    });
     super.initState();
   }
 
@@ -49,7 +56,9 @@ class _ListViewDemoState extends State<ListViewDemo> {
     print(Provider.of<LongListStore>(context).list);
     return Scaffold(
       body: LongList<FeedItem>(
+        padding: EdgeInsets.only(top: 100),
         id: id,
+        controller: scrollController,
         itemWidget: itemWidget,
       )
     );
@@ -71,7 +80,7 @@ class _ListViewDemoState extends State<ListViewDemo> {
               provider.deleteItem(id, index);
             },
             child: Text(
-              'delete'
+              'delete${index}'
             )
           ),
           GestureDetector(

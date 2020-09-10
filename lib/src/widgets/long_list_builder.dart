@@ -87,6 +87,8 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
           ),
         ],
       );
+    } else if (mode == LongListMode.sliver_custom) {
+      return Text('Todo');
     } else {
       return Text('LongListMode传值错误');
     }

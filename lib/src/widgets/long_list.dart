@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_long_list/src/utils/exposure.dart';
+import 'package:flutter_long_list/src/widgets/exposure_listener.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import '../store/long_list_provider.dart';
@@ -9,58 +11,60 @@ import './nomore.dart';
 import './overflow_widget.dart';
 import './error.dart';
 
-enum LongListMode {grid, list, sliver_grid, sliver_list}
+enum LongListMode {grid, list, sliver_grid, sliver_list, sliver_custom}
 class LongList<T extends Clone<T>> extends StatelessWidget {
   final String id;
   final LongListMode mode;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsets padding;
   final ScrollController controller;
   final SliverGridDelegate gridDelegate;
   final Axis scrollDirection;
   final Function(BuildContext context, LongListProvider<T> provider, String id,
       int index, T data) itemWidget;
   final Widget sliverHead;
+  final double sliverHeadHeight;
   final Widget loading;
+  final Exposure exposure = Exposure();
+
   LongList({
     Key key,
     @required this.id,
+    @required this.itemWidget,
     this.mode = LongListMode.list,
     this.padding = const EdgeInsets.all(0.0),
     this.controller,
     this.gridDelegate,
     this.scrollDirection = Axis.vertical,
-    @required this.itemWidget,
     this.sliverHead,
+    this.sliverHeadHeight,
     this.loading,
   }) : assert(id != null), assert(itemWidget != null),
     super(key: key);
 
-  bool _handleScrollNotification(
-      BuildContext context, ScrollNotification notification) {
-    if (notification.depth != 0) {
-      return false;
+  _loadmore(context) {
+    LongListProvider<T> provider = Provider.of<LongListProvider<T>>(context, listen: false);
+    if (provider.hasMore && !provider.hasError && !provider.isLoading) {
+      provider.loadMore(id);
     }
-    LongListProvider<T> provider = context.read<LongListProvider<T>>();
-    if (notification.metrics.pixels >=
-        notification.metrics.maxScrollExtent - 100) {
-      if (provider.hasMore && !provider.hasError && !provider.isLoading) {
-         print('loadmore');
-        provider.loadMore(id);
-      }
-    }
-    return false;
   }
 
   Future _onRefresh(LongListProvider<T> provider) async{
-    print('refresh');
     await provider.refresh(id);
   }
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (ScrollNotification notification) =>
-          _handleScrollNotification(context, notification),
+    return ExposureListener(
+      scrollDirection: Axis.vertical,
+      exposure: exposure,
+      padding: padding,
+      sliverHeadHeight: sliverHeadHeight,
+      loadmore: () => _loadmore(context),
+      callback: (list) {
+        list.forEach((item) {
+          print('上报数据：${item.index}');
+        });
+      },
       child: GlowNotificationWidget(
         showGlowLeading: false,
         showGlowTrailing: false,
@@ -87,7 +91,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
                   itemCount: (data.item2 || !data.item3) ? data.item1 + 1 : data.item1,
                   sliverHead: sliverHead,
                   child: (context, index) {
-                    if (!data.item3 && _provider.listConfig.total == index) {
+                    if (!data.item3 && _provider.list.length == index) {
                       return LongListNoMore();
                     } else if (data.item2 && data.item1 == index) {
                       return LongListLoading(
