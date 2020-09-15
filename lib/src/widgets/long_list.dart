@@ -10,7 +10,6 @@ import './nomore.dart';
 import './overflow_widget.dart';
 import './error.dart';
 import './exposure_listener.dart';
-import './multi_exposure_listener.dart';
 
 enum LongListMode {grid, list, sliver_grid, sliver_list, sliver_custom}
 
@@ -79,15 +78,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
         child: longList(context)
       );
     } else {
-      return MultiExposureListener(
-        scrollDirection: Axis.vertical,
-        exposure: exposure,
-        padding: padding,
-        sliverHeadHeight: sliverHeadHeight,
-        loadmore: () => _loadmore(context),
-        callback: (exposureList) => _exposureCallback(context, exposureList),
-        child: longList(context)
-      );
+      return longList(context);
     }
   }
 
