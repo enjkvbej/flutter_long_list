@@ -27,23 +27,25 @@ class ExposureListener extends StatelessWidget {
   }) : super(key: key);
 
   bool _onNotification(ScrollNotification notice) {
+    
     if (notice.metrics.pixels >= notice.metrics.maxScrollExtent - 100) {
       loadmore();
     }
 
     final sliverMultiBoxAdaptorElement = _findSliverMultiBoxAdaptorElement(notice.context);
     if (sliverMultiBoxAdaptorElement == null) return false;
+   
     int firstIndex = sliverMultiBoxAdaptorElement.childCount;
     assert(firstIndex != null);
     int endIndex = -1;
     final int startTime = DateTime.now().millisecondsSinceEpoch;
     void onVisitChildren(Element element) {
-      final SliverMultiBoxAdaptorParentData oldParentData =
+      final SliverMultiBoxAdaptorParentData parentData =
           element?.renderObject?.parentData;
-      if (oldParentData != null) {
+      if (parentData != null) {
         double boundFirst = sliverHeadHeight != null
-            ? oldParentData.layoutOffset + sliverHeadHeight + padding.top
-            : oldParentData.layoutOffset + padding.top;
+            ? parentData.layoutOffset + sliverHeadHeight + padding.top
+            : parentData.layoutOffset + padding.top;
         double itemLength = scrollDirection == Axis.vertical
             ? element.renderObject.paintBounds.height
             : element.renderObject.paintBounds.width;
@@ -51,13 +53,12 @@ class ExposureListener extends StatelessWidget {
         if (boundFirst >= notice.metrics.pixels &&
             boundEnd <=
                 (notice.metrics.pixels + notice.metrics.viewportDimension)) {
-          firstIndex = min(firstIndex, oldParentData.index);
-          endIndex = max(endIndex, oldParentData.index);
+          firstIndex = min(firstIndex, parentData.index);
+          endIndex = max(endIndex, parentData.index);
         }
       }
     }
     sliverMultiBoxAdaptorElement.visitChildren(onVisitChildren);
-    // callback(firstIndex, endIndex, notice);
     callback(exposure.changeExposure(firstIndex, endIndex, startTime));
     return false;
   }
@@ -76,7 +77,6 @@ class ExposureListener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
     return NotificationListener<ScrollNotification>(child: child, onNotification: _onNotification);
   }
 }

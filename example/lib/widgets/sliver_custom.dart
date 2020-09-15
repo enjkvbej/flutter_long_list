@@ -5,14 +5,14 @@ import 'package:flutter_long_list/flutter_long_list.dart';
 import '../api/http.dart';
 import '../model/feed_item.dart';
 
-class SliverGridViewDemo extends StatefulWidget {
-  SliverGridViewDemo({Key key}) : super(key: key);
+class SliverCustomViewDemo extends StatefulWidget {
+  SliverCustomViewDemo({Key key}) : super(key: key);
 
   @override
-  _SliverGridViewDemoState createState() => _SliverGridViewDemoState();
+  _SliverCustomViewDemoState createState() => _SliverCustomViewDemoState();
 }
 
-class _SliverGridViewDemoState extends State<SliverGridViewDemo> {
+class _SliverCustomViewDemoState extends State<SliverCustomViewDemo> {
   String id = 'grid_view';
   @override
   initState() {
@@ -51,24 +51,42 @@ class _SliverGridViewDemoState extends State<SliverGridViewDemo> {
     return Scaffold(
       body: LongList<FeedItem>(
         id: id,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10.0,
-          mainAxisSpacing: 10.0,
-        ),
-        padding: EdgeInsets.only(left: 10, right: 10),
-        mode: LongListMode.sliver_grid,
+        mode: LongListMode.sliver_custom,
         sliverHead: SliverPersistentHeader(
           pinned: true,
           delegate: SliverCustomHeaderDelegate(
             title: '哪吒之魔童降世',
             collapsedHeight: 40,
-            expandedHeight: 200,
+            expandedHeight: 300,
             paddingTop: MediaQuery.of(context).padding.top,
             coverImgUrl: 'https://img.zcool.cn/community/01c6615d3ae047a8012187f447cfef.jpg@1280w_1l_2o_100sh.jpg'
           ),
         ),
-        sliverHeadHeight: 200,
+        sliverHeadHeight: 300,
+        sliverChildren: [
+          SliverPadding(
+            padding: const EdgeInsets.all(8.0),
+            sliver: new SliverGrid( //Grid
+              gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, //Grid按两列显示
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 10.0,
+                childAspectRatio: 4.0,
+              ),
+              delegate: new SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                  //创建子widget      
+                  return new Container(
+                    alignment: Alignment.center,
+                    color: Colors.cyan[100 * (index % 9)],
+                    child: new Text('grid item $index'),
+                  );
+                },
+                childCount: 10,
+              ),
+            ),
+          ),
+        ],
         itemWidget: itemWidget,
         exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
           exposureList.forEach((item) {
@@ -78,7 +96,11 @@ class _SliverGridViewDemoState extends State<SliverGridViewDemo> {
       )
     );
   }
-
+  Widget getChildWidget() {
+    return Container(
+      
+    );
+  }
   Widget itemWidget(BuildContext context, LongListProvider<FeedItem> provider, String id, int index, FeedItem data) {
     print('rebuild${index}');
     return  Container(

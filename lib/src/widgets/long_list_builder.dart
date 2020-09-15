@@ -14,6 +14,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
   final ScrollController controller;
   final Function(BuildContext context, int index) child;
   final Widget sliverHead;
+  final List<Widget> sliverChildren;
   const LongListBuilder({
     this.mode,
     @required this.itemCount,
@@ -24,6 +25,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
     this.gridDelegate,
     this.child,
     this.sliverHead,
+    this.sliverChildren,
     Key key
   }) : super(key: key);
   
@@ -51,6 +53,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
     } else if (mode == LongListMode.list) {
       return ExtendedListView.builder(
         padding: padding,
+        extendedListDelegate: getExtendedListDelegate(),
         scrollDirection: scrollDirection,
         shrinkWrap: true,
         controller: controller,
@@ -80,6 +83,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         slivers: <Widget>[
           sliverHead,
           ExtendedSliverList(
+            extendedListDelegate: getExtendedListDelegate(),
             delegate: SliverChildBuilderDelegate(
               child,
               childCount: itemCount,
@@ -88,7 +92,21 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         ],
       );
     } else if (mode == LongListMode.sliver_custom) {
-      return Text('Todo');
+      return CustomScrollView(
+        scrollDirection: scrollDirection,
+        controller: controller,
+        slivers: <Widget>[
+          sliverHead,
+          ...sliverChildren,
+          ExtendedSliverList(
+            extendedListDelegate: getExtendedListDelegate(),
+            delegate: SliverChildBuilderDelegate(
+              child,
+              childCount: itemCount,
+            ),
+          ),
+        ],
+      );
     } else {
       return Text('LongListMode传值错误');
     }

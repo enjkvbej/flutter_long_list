@@ -64,6 +64,11 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
         ),
         sliverHeadHeight: 300,
         itemWidget: itemWidget,
+        exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
+          exposureList.forEach((item) {
+            print('上报数据：${provider.list[item.index].color} ${item.index} ${item.time}');
+          });
+        },
       )
     );
   }

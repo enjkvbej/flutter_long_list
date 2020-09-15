@@ -50,6 +50,11 @@ class _GridViewDemoState extends State<GridViewDemo> {
     return Scaffold(
       body: LongList<FeedItem>(
         id: id,
+        exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
+          exposureList.forEach((item) {
+            print('上报数据：${provider.list[item.index].color} ${item.index} ${item.time}');
+          });
+        },
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 10.0,

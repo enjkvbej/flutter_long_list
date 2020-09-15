@@ -1,3 +1,4 @@
+import 'package:example/pages/sliver_custom_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_long_list/flutter_long_list.dart';
@@ -56,6 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
             SliverGridViewPage(),
             SizedBox(height: 20,),
             SliverListViewPage(),
+            SizedBox(height: 20,),
+            SliverCustomViewPage(),
           ],
         ),
       ),
