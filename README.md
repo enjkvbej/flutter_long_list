@@ -5,14 +5,14 @@ A Flutter LongList with Provider which supports ListView, GridView and Slivers
 1. Support refresh & loadmore & error
 1. Use Provider4.x to manage list data , and use Selector can improve performance<br>
 2. Support ListView, GridView and Slivers <br>
-3. Custom and easy api <br>
+3. Easy api, custom loading & nomore style <br>
 4. Support List item exposure listener <br>
 
 # Get started
 Add it to your pubspec.yaml file:
 ```
   dependencies:
-     flutter_long_list: ^0.0.5
+     flutter_long_list: ^0.0.6
 ```
 Install packages from the command line
 ```

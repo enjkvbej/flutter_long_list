@@ -65,6 +65,20 @@ class _ListViewDemoState extends State<ListViewDemo> {
             print('上报数据：${provider.list[item.index].color} ${item.index} ${item.time}');
           });
         },
+        nomore: (init) {
+          return Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(top: 40, bottom: 40),
+            child: Text(
+              init ? '暂无相关内容...' : '已经到底了哦...',
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.5),
+                fontWeight: FontWeight.bold,
+                fontSize: 13
+              )
+            )
+          );
+        }
       )
     );
   }

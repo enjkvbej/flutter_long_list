@@ -15,3 +15,7 @@
 ## [0.0.5]
 ### 1.Add nomore api.
 ### 2.Add Readme.
+
+## [0.0.6]
+### 1.The filed 'id' is not required in init function.
+### 2.Fix nomore api is function.

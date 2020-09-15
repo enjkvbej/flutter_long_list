@@ -3,12 +3,12 @@ import 'package:flutter/cupertino.dart';
 
 class LongListNoMore extends StatelessWidget {
   final bool init;
-  final Widget child;
+  final Function(bool init) child;
   const LongListNoMore({this.init = false, this.child, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return child ?? Container(
+    return child(init) ?? Container(
       alignment: Alignment.center,
       padding: EdgeInsets.only(top: 40, bottom: 40),
       child: Text(

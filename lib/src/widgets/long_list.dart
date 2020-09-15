@@ -18,7 +18,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   final LongListMode mode;
   final EdgeInsets padding;
   final Widget loading;
-  final Widget nomore;
+  final Function(bool init) nomore;
   final ScrollController controller;
   final SliverGridDelegate gridDelegate;
   final Axis scrollDirection;

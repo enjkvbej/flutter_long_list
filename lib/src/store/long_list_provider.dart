@@ -23,13 +23,12 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get hasMore => _hasMore;
   bool get hasError => _hasError;
-
   /// 初始化
-  /// id: 唯一标识
+  /// id: 唯一标识  全局数据时必须需要
   /// request function (offset, num) => list or error
   /// callback: 数据自定义事件
   init(
-      {@required String id,
+      {String id,
       @required int pageSize,
       @required Function request,
       Function callback}) async {
@@ -37,7 +36,7 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
         id: id, pageSize: pageSize, request: request, callback: callback);
     await _getList(init: true);
   }
-
+  /// 获取数据的方法
   _getList({init = false}) async {
     // 使用providder不要在initState执行notifyListeners()
     if (!init) {
@@ -60,6 +59,14 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
       notifyListeners();
     }
   }
+  _addItems(List<T> data) {
+    _list.addAll(data);
+    store?.saveListById(_listConfig.id, _list);
+    if (_listConfig.callback != null) {
+      _listConfig.callback(_list);
+    }
+    notifyListeners();
+  }
   /// 刷新
   refresh(String id) async {
     _listConfig.offset = 0;
@@ -68,19 +75,10 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
     _list.clear();
     await _getList();
   }
-  /// 刷新
+  /// 加载更多
   loadMore(String id) async {
     _listConfig.offset += _listConfig.pageSize;
     await _getList();
-  }
-  
-  _addItems(List<T> data) {
-    _list.addAll(data);
-    store?.saveListById(_listConfig.id, _list);
-    if (_listConfig.callback != null) {
-      _listConfig.callback(_list);
-    }
-    notifyListeners();
   }
   /// 修改
   changeItem(String id, int index, T data) {

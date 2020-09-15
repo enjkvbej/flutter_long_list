@@ -1,6 +1,6 @@
 name: flutter_long_list
 description: A Flutter LongList with Provider which supports ListView, GridView and Slivers.
-version: 0.0.5
+version: 0.0.6
 homepage: https://github.com/enjkvbej/flutter_long_list
 
 environment:
