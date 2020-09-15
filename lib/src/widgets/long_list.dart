@@ -18,6 +18,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   final LongListMode mode;
   final EdgeInsets padding;
   final Widget loading;
+  final Widget nomore;
   final ScrollController controller;
   final SliverGridDelegate gridDelegate;
   final Axis scrollDirection;
@@ -37,6 +38,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
     this.mode = LongListMode.list,
     this.padding = const EdgeInsets.all(0.0),
     this.loading,
+    this.nomore,
     this.controller,
     this.gridDelegate,
     this.scrollDirection = Axis.vertical,
@@ -111,7 +113,9 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
                 sliverChildren: sliverChildren,
                 child: (context, index) {
                   if (!data.item3 && _provider.list.length == index) {
-                    return LongListNoMore();
+                    return LongListNoMore(
+                      child: nomore
+                    );
                   } else if (data.item2 && data.item1 == index) {
                     return LongListLoading(
                       position: LoadingPosition.bottom,
@@ -137,7 +141,10 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
             );
           } else {
             if (!data.item3) {
-              return LongListNoMore(init: true);
+              return LongListNoMore(
+                init: true,
+                child: nomore,
+              );
             } else if (data.item4) {
               return LongListError<T>(id: id);
             } else {
