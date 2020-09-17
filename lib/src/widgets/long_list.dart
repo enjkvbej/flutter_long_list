@@ -52,12 +52,12 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   void _loadmore(BuildContext context) {
     LongListProvider<T> provider = Provider.of<LongListProvider<T>>(context, listen: false);
     if (provider.hasMore && !provider.hasError && !provider.isLoading) {
-      provider.loadMore(id);
+      provider.loadMore();
     }
   }
 
   Future _onRefresh(LongListProvider<T> provider) async{
-    await provider.refresh(id);
+    await provider.refresh();
   }
   
   void _exposureCallback(BuildContext context, List<ToExposureItem> exposureList) {

@@ -19,3 +19,6 @@
 ## [0.0.6]
 ### 1.The filed 'id' is not required in init function.
 ### 2.Fix nomore api is function.
+
+## [0.0.7] 2020-09-17
+### 1.Fix error style.

@@ -39,22 +39,23 @@ class _ListViewDemoState extends State<ListViewDemo> {
   _getList(int offset) async{
     final result = await api(0, 10);
     print(result);
-    if (result['list'] != null) {
-      return {
-        'list': result['list'],
-        'total': result['total']
-      };
-    } else {
+    // if (result['list'] != null) {
+    //   return {
+    //     'list': result['list'],
+    //     'total': result['total']
+    //   };
+    // } else {
       return {
         'error': 'error'
       };
-    }
+    //}
   }
 
   @override
   Widget build(BuildContext context) {
     print(Provider.of<LongListStore>(context).list);
     return Scaffold(
+      backgroundColor: Colors.black,
       body: LongList<FeedItem>(
         padding: EdgeInsets.only(top: 100),
         id: id,
@@ -96,7 +97,7 @@ class _ListViewDemoState extends State<ListViewDemo> {
         children: [
           GestureDetector(
             onTap: () {
-              provider.deleteItem(id, index);
+              provider.deleteItem(index);
             },
             child: Text(
               'delete${index}'
@@ -105,7 +106,7 @@ class _ListViewDemoState extends State<ListViewDemo> {
           GestureDetector(
             onTap: () {
               data.like = !data.like;
-              provider.changeItem(id, index, data);
+              provider.changeItem(index, data);
             },
             child: Icon(
               data.like ? Icons.favorite : Icons.favorite_border

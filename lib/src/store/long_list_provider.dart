@@ -68,7 +68,7 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
     notifyListeners();
   }
   /// 刷新
-  refresh(String id) async {
+  refresh() async {
     _listConfig.offset = 0;
     _hasMore = true;
     _hasError = false;
@@ -76,18 +76,18 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
     await _getList();
   }
   /// 加载更多
-  loadMore(String id) async {
+  loadMore() async {
     _listConfig.offset += _listConfig.pageSize;
     await _getList();
   }
   /// 修改
-  changeItem(String id, int index, T data) {
+  changeItem(int index, T data) {
     _list[index] = data;
     store?.saveListById(_listConfig.id, _list);
     notifyListeners();
   }
   /// 删除
-  deleteItem(String id, int index) {
+  deleteItem(int index) {
     _list.removeAt(index);
     store?.saveListById(_listConfig.id, _list);
     notifyListeners();

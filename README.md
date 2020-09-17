@@ -12,7 +12,7 @@ A Flutter LongList with Provider which supports ListView, GridView and Slivers
 Add it to your pubspec.yaml file:
 ```
   dependencies:
-     flutter_long_list: ^0.0.6
+     flutter_long_list: ^0.0.7
 ```
 Install packages from the command line
 ```

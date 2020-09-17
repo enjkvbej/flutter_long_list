@@ -49,6 +49,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
   Widget build(BuildContext context) {
     print(Provider.of<LongListStore>(context).list);
     return Scaffold(
+      backgroundColor: Colors.black,
       body: LongList<FeedItem>(
         id: id,
         mode: LongListMode.sliver_list,
@@ -86,7 +87,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
         children: [
           GestureDetector(
             onTap: () {
-              provider.deleteItem(id, index);
+              provider.deleteItem(index);
             },
             child: Text(
               'delete${index}'
@@ -95,7 +96,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
           GestureDetector(
             onTap: () {
               data.like = !data.like;
-              provider.changeItem(id, index, data);
+              provider.changeItem(index, data);
             },
             child: Icon(
               data.like ? Icons.favorite : Icons.favorite_border
