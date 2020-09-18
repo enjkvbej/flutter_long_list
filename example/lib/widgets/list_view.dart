@@ -39,16 +39,16 @@ class _ListViewDemoState extends State<ListViewDemo> {
   _getList(int offset) async{
     final result = await api(0, 10);
     print(result);
-    // if (result['list'] != null) {
-    //   return {
-    //     'list': result['list'],
-    //     'total': result['total']
-    //   };
-    // } else {
+    if (result['list'] != null) {
+      return {
+        'list': result['list'],
+        'total': result['total']
+      };
+    } else {
       return {
         'error': 'error'
       };
-    //}
+    }
   }
 
   @override

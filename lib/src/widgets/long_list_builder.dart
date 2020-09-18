@@ -15,11 +15,13 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
   final Function(BuildContext context, int index) child;
   final Widget sliverHead;
   final List<Widget> sliverChildren;
+  final bool shrinkWrap;
   const LongListBuilder({
     this.mode,
     @required this.itemCount,
     @required this.provider,
     this.padding,
+    this.shrinkWrap,
     this.scrollDirection,
     this.controller,
     this.gridDelegate,
@@ -45,7 +47,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         extendedListDelegate: getExtendedListDelegate(),
         padding: padding,
         scrollDirection: scrollDirection,
-        shrinkWrap: true,
+        shrinkWrap: shrinkWrap,
         controller: controller,
         itemCount: itemCount,
         itemBuilder: child,
@@ -55,7 +57,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         padding: padding,
         extendedListDelegate: getExtendedListDelegate(),
         scrollDirection: scrollDirection,
-        shrinkWrap: true,
+        shrinkWrap: shrinkWrap,
         controller: controller,
         itemCount: itemCount,
         itemBuilder: child,
@@ -64,6 +66,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
       return CustomScrollView(
         scrollDirection: scrollDirection,
         controller: controller,
+        shrinkWrap: shrinkWrap,
         slivers: <Widget>[
           sliverHead,
           ExtendedSliverGrid(
@@ -80,6 +83,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
       return CustomScrollView(
         scrollDirection: scrollDirection,
         controller: controller,
+        shrinkWrap: shrinkWrap,
         slivers: <Widget>[
           sliverHead,
           ExtendedSliverList(
@@ -95,6 +99,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
       return CustomScrollView(
         scrollDirection: scrollDirection,
         controller: controller,
+        shrinkWrap: shrinkWrap,
         slivers: <Widget>[
           sliverHead,
           ...sliverChildren,

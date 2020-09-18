@@ -80,17 +80,32 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
     _listConfig.offset += _listConfig.pageSize;
     await _getList();
   }
+  /// 添加
+  addItem(int index, T data, {String id}) {
+    if (id != null) {
+      store?.addListById(id, index, data);
+    } else {
+      _list[index] = data;
+      notifyListeners();
+    }
+  }
   /// 修改
-  changeItem(int index, T data) {
-    _list[index] = data;
-    store?.saveListById(_listConfig.id, _list);
-    notifyListeners();
+  changeItem(int index, T data, {String id}) {
+    if (id != null) {
+      store?.changeListById(id, index, data);
+    } else {
+      _list[index] = data;
+      notifyListeners();
+    }
   }
   /// 删除
-  deleteItem(int index) {
-    _list.removeAt(index);
-    store?.saveListById(_listConfig.id, _list);
-    notifyListeners();
+  deleteItem(int index, {String id}) {
+    if (id != null) {
+      store?.deleteListById(id, index);
+    } else {
+      _list.removeAt(index);
+      notifyListeners();
+    }
   }
 }
 

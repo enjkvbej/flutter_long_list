@@ -15,6 +15,7 @@ enum LongListMode {grid, list, sliver_grid, sliver_list, sliver_custom}
 
 class LongList<T extends Clone<T>> extends StatelessWidget {
   final String id;
+  final bool shrinkWrap;
   final LongListMode mode;
   final EdgeInsets padding;
   final Widget loading;
@@ -34,6 +35,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   LongList({
     Key key,
     this.id,
+    this.shrinkWrap,
     @required this.itemWidget,
     this.mode = LongListMode.list,
     this.padding = const EdgeInsets.all(0.0),
@@ -103,6 +105,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
               onRefresh: () => _onRefresh(_provider),
               child: LongListBuilder(
                 mode: mode,
+                shrinkWrap: shrinkWrap,
                 provider: _provider,
                 controller: controller,
                 scrollDirection: scrollDirection,
