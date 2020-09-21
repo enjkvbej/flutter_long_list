@@ -8,9 +8,9 @@ import 'package:flutter/material.dart' show ChangeNotifier;
  * 3.使用LongList组件 进行init 注意ChangeNotifierProvider要先包到组件外层
  */
 class LongListProvider<T extends Clone<T>> with ChangeNotifier {
-  Map<String, List> _hashMapList = {};
+  Map<String, List<T>> _hashMapList = {};
   Map<String, LongListConfig> _listConfig = {};
-  Map<String, List> get list => _hashMapList;
+  Map<String, List<T>> get list => _hashMapList;
   Map<String, LongListConfig> get listConfig => _listConfig;
   /// 初始化
   /// id: 唯一标识  全局数据时必须需要
