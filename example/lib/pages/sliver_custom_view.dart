@@ -9,7 +9,6 @@ class SliverCustomViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LongListStore longCustomStore = context.watch<LongListStore>();
     return MaterialButton(
       onPressed: () {
         Navigator.push(
@@ -17,7 +16,7 @@ class SliverCustomViewPage extends StatelessWidget {
           PageRouteBuilder(pageBuilder: (_,
               Animation animation, Animation secondaryAnimation) {
             return ChangeNotifierProvider<LongListProvider<FeedItem>>(
-              create: (_) => LongListProvider<FeedItem>(store: longCustomStore),
+              create: (_) => LongListProvider<FeedItem>(),
               child: SliverCustomViewDemo(),
             );
           }),

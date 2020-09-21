@@ -26,7 +26,7 @@ class LongListError<T extends Clone<T>> extends StatelessWidget {
           SizedBox(height: 10),
           MaterialButton(
             onPressed: () {
-              context.read<LongListProvider<T>>().refresh();
+              context.read<LongListProvider<T>>().refresh(id);
             },
             minWidth: 78,
             height: 30,

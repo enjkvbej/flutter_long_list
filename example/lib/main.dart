@@ -1,7 +1,6 @@
 import 'package:example/pages/sliver_custom_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_long_list/flutter_long_list.dart';
 import 'package:example/pages/grid_view.dart';
 import 'package:example/pages/sliver_grid_view.dart';
 import 'package:example/pages/sliver_list_view.dart';
@@ -15,17 +14,12 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<LongListStore>(create: (_) => LongListStore()),
-      ],
-      builder: (context, child) => MaterialApp(
-        title: 'FlutterLongList Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: MyHomePage(title: 'FlutterLongList demo')
-      )
+    return MaterialApp(
+      title: 'FlutterLongList Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(title: 'FlutterLongList demo')
     );
   }
 }

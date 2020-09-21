@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show ChangeNotifier;
-import 'package:flutter_long_list/src/store/long_list_store.dart';
 
 /* 
  * 通用列表数据
@@ -9,102 +8,115 @@ import 'package:flutter_long_list/src/store/long_list_store.dart';
  * 3.使用LongList组件 进行init 注意ChangeNotifierProvider要先包到组件外层
  */
 class LongListProvider<T extends Clone<T>> with ChangeNotifier {
-  final LongListStore store;
-  LongListProvider({this.store});
-
-  List<T> _list = List<T>();
-  LongListConfig _listConfig;
-  bool _isLoading = false;
-  bool _hasMore = true;
-  bool _hasError = false;
-
-  List<T> get list => _list;
-  LongListConfig get listConfig => _listConfig;
-  bool get isLoading => _isLoading;
-  bool get hasMore => _hasMore;
-  bool get hasError => _hasError;
+  Map<String, List> _hashMapList = {};
+  Map<String, LongListConfig> _listConfig = {};
+  Map<String, List> get list => _hashMapList;
+  Map<String, LongListConfig> get listConfig => _listConfig;
   /// 初始化
   /// id: 唯一标识  全局数据时必须需要
   /// request function (offset, num) => list or error
   /// callback: 数据自定义事件
   init(
-      {String id,
+      {@required String id,
       @required int pageSize,
       @required Function request,
       Function callback}) async {
-    _listConfig = LongListConfig(
+        if (_hashMapList[id] == null) {
+          _hashMapList[id] = [];
+        }
+    _listConfig[id] = LongListConfig(
         id: id, pageSize: pageSize, request: request, callback: callback);
-    await _getList(init: true);
+    await _getList(id, init: true);
   }
-  /// 获取数据的方法
-  _getList({init = false}) async {
+  // 获取数据的方法
+  _getList(String id, {init = false}) async {
     // 使用providder不要在initState执行notifyListeners()
     if (!init) {
-      _isLoading = true;
+      _listConfig[id].isLoading = true;
       notifyListeners();
     }
-    final result = await _listConfig.request(_listConfig.offset);
+    final result = await _listConfig[id].request(_listConfig[id].offset);
     if (result['list'] != null &&
         result['total'] != null &&
         result['error'] == null) {
-      _listConfig.total = result['total'];
-      if (result['total'] == result['list'].length + _list.length) {
-        _hasMore = false;
+      _listConfig[id].total = result['total'];
+      if (result['total'] == result['list'].length + _hashMapList[id].length) {
+        _listConfig[id].hasMore = false;
       }
-      _isLoading = false;
-      _addItems(result['list']);
+      _listConfig[id].isLoading = false;
+      addItems(id, result['list']);
     } else {
-      _hasError = true;
-      _isLoading = false;
+      _listConfig[id].hasError = true;
+      _listConfig[id].isLoading = false;
       notifyListeners();
     }
   }
-  _addItems(List<T> data) {
-    _list.addAll(data);
-    store?.saveListById(_listConfig.id, _list);
-    if (_listConfig.callback != null) {
-      _listConfig.callback(_list);
+  // 检验并生成id
+  _checkId(String id) {
+    if (_hashMapList[id] == null) {
+      return false;
+    }
+    return true;
+  }
+  /// 添加数组
+  addItems(String id, List<T> data) {
+    _hashMapList[id].addAll(data);
+    if (_listConfig[id].callback != null) {
+      _listConfig[id].callback(_hashMapList[id]);
     }
     notifyListeners();
   }
+
   /// 刷新
-  refresh() async {
-    _listConfig.offset = 0;
-    _hasMore = true;
-    _hasError = false;
-    _list.clear();
-    await _getList();
+  refresh(String id) async {
+    if (_checkId(id)) {
+      _listConfig[id].offset = 0;
+      _listConfig[id].hasMore = true;
+      _listConfig[id].hasError = false;
+      _hashMapList[id].clear();
+      await _getList(id);
+    } else {
+      print('list id${id}没有初始化');
+    }
   }
+
   /// 加载更多
-  loadMore() async {
-    _listConfig.offset += _listConfig.pageSize;
-    await _getList();
+  loadMore(String id) async {
+    if (_checkId(id)) {
+      _listConfig[id].offset += _listConfig[id].pageSize;
+      await _getList(id);
+    } else {
+      print('list id${id}没有初始化');
+    }
   }
+
   /// 添加
-  addItem(int index, T data, {String id}) {
-    if (id != null) {
-      store?.addListById(id, index, data);
-    } else {
-      _list[index] = data;
+  addItem(String id, int index, T data) {
+    if (_checkId(id))  {
+      _hashMapList[id].insert(index, data);
       notifyListeners();
+    } else {
+      print('list id${id}没有初始化');
     }
   }
+
   /// 修改
-  changeItem(int index, T data, {String id}) {
-    if (id != null) {
-      store?.changeListById(id, index, data);
-    } else {
-      _list[index] = data;
+  changeItem(String id, int index, T data) {
+    if (_checkId(id))  {
+      _hashMapList[id][index] = data;
       notifyListeners();
+    } else {
+      print('list id${id}没有初始化');
     }
   }
+
   /// 删除
-  deleteItem(int index, {String id}) {
-    if (id != null) {
-      store?.deleteListById(id, index);
-    } else {
-      _list.removeAt(index);
+  removeItem(String id, int index) {
+    if (_checkId(id))  {
+      _hashMapList[id].removeAt(index);
       notifyListeners();
+    } else {
+      print('list id${id}没有初始化');
     }
   }
 }
@@ -120,6 +132,9 @@ class LongListConfig {
   int pageSize;
   Function request;
   Function callback;
+  bool isLoading;
+  bool hasMore;
+  bool hasError;
 
   LongListConfig({
     this.id,
@@ -128,5 +143,8 @@ class LongListConfig {
     this.pageSize,
     this.request,
     this.callback,
+    this.isLoading = false,
+    this.hasMore = true,
+    this.hasError = false,
   });
 }

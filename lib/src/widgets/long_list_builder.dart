@@ -5,8 +5,10 @@ import 'package:flutter_long_list/src/store/long_list_provider.dart';
 import './long_list.dart';
 
 class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
+  final String id;
   final LongListMode mode;
   final int itemCount;
+  final double cacheExtent;
   final LongListProvider<T> provider;
   final EdgeInsetsGeometry padding;
   final Axis scrollDirection;
@@ -16,12 +18,16 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
   final Widget sliverHead;
   final List<Widget> sliverChildren;
   final bool shrinkWrap;
+  final ScrollPhysics physics;
   const LongListBuilder({
+    this.id,
     this.mode,
+    this.cacheExtent,
     @required this.itemCount,
     @required this.provider,
     this.padding,
     this.shrinkWrap,
+    this.physics,
     this.scrollDirection,
     this.controller,
     this.gridDelegate,
@@ -33,7 +39,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
   
   getExtendedListDelegate() {
     return ExtendedListDelegate(
-      lastChildLayoutTypeBuilder: (int index) => ((!provider.hasMore || provider.isLoading || provider.hasError)
+      lastChildLayoutTypeBuilder: (int index) => ((!provider.listConfig[id].hasMore || provider.listConfig[id].isLoading || provider.listConfig[id].hasError)
         && index == itemCount - 1)
         ? LastChildLayoutType.fullCrossAxisExtent
         : LastChildLayoutType.none
@@ -48,6 +54,8 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         padding: padding,
         scrollDirection: scrollDirection,
         shrinkWrap: shrinkWrap,
+        cacheExtent: cacheExtent,
+        physics: physics,
         controller: controller,
         itemCount: itemCount,
         itemBuilder: child,
@@ -58,6 +66,8 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         extendedListDelegate: getExtendedListDelegate(),
         scrollDirection: scrollDirection,
         shrinkWrap: shrinkWrap,
+        cacheExtent: cacheExtent,
+        physics: physics,
         controller: controller,
         itemCount: itemCount,
         itemBuilder: child,
@@ -67,6 +77,8 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         scrollDirection: scrollDirection,
         controller: controller,
         shrinkWrap: shrinkWrap,
+        cacheExtent: cacheExtent,
+        physics: physics,
         slivers: <Widget>[
           sliverHead,
           ExtendedSliverGrid(
@@ -84,6 +96,8 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         scrollDirection: scrollDirection,
         controller: controller,
         shrinkWrap: shrinkWrap,
+        cacheExtent: cacheExtent,
+        physics: physics,
         slivers: <Widget>[
           sliverHead,
           ExtendedSliverList(
@@ -100,6 +114,8 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         scrollDirection: scrollDirection,
         controller: controller,
         shrinkWrap: shrinkWrap,
+        cacheExtent: cacheExtent,
+        physics: physics,
         slivers: <Widget>[
           sliverHead,
           ...sliverChildren,

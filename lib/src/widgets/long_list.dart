@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_long_list/src/widgets/multi_exposure_listener.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import '../store/long_list_provider.dart';
@@ -16,16 +17,18 @@ enum LongListMode {grid, list, sliver_grid, sliver_list, sliver_custom}
 class LongList<T extends Clone<T>> extends StatelessWidget {
   final String id;
   final bool shrinkWrap;
+  final ScrollPhysics physics;
   final LongListMode mode;
   final EdgeInsets padding;
-  final Widget loading;
-  final Function(bool init) nomore;
+  final double cacheExtent;
   final ScrollController controller;
   final SliverGridDelegate gridDelegate;
   final Axis scrollDirection;
   final Function(BuildContext context, LongListProvider<T> provider, String id,
       int index, T data) itemWidget;
   final Function exposureCallback;
+  final Widget loading;
+  final Function(bool init) nomore;
   final Widget sliverHead;
   final double sliverHeadHeight;
   final List<Widget> sliverChildren;
@@ -35,7 +38,9 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   LongList({
     Key key,
     this.id,
-    this.shrinkWrap,
+    this.shrinkWrap = false,
+    this.physics,
+    this.cacheExtent,
     @required this.itemWidget,
     this.mode = LongListMode.list,
     this.padding = const EdgeInsets.all(0.0),
@@ -53,18 +58,18 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
 
   void _loadmore(BuildContext context) {
     LongListProvider<T> provider = Provider.of<LongListProvider<T>>(context, listen: false);
-    if (provider.hasMore && !provider.hasError && !provider.isLoading) {
-      provider.loadMore();
+    if (provider.listConfig[id].hasMore && !provider.listConfig[id].hasError && !provider.listConfig[id].isLoading) {
+      provider.loadMore(id);
     }
   }
 
   Future _onRefresh(LongListProvider<T> provider) async{
-    await provider.refresh();
+    await provider.refresh(id);
   }
   
   void _exposureCallback(BuildContext context, List<ToExposureItem> exposureList) {
     LongListProvider<T> provider = Provider.of<LongListProvider<T>>(context, listen: false);
-    if (exposureList.isNotEmpty) {
+    if (exposureList.isNotEmpty && exposureCallback != null) {
       return exposureCallback(provider, exposureList);
     }
   }
@@ -72,7 +77,8 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (mode != LongListMode.sliver_custom) {
-      return ExposureListener(
+      return ExposureListener<T>(
+        id: id,
         scrollDirection: Axis.vertical,
         exposure: exposure,
         padding: padding,
@@ -82,7 +88,15 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
         child: longList(context)
       );
     } else {
-      return longList(context);
+      return MultiExposureListener(
+        scrollDirection: Axis.vertical,
+        exposure: exposure,
+        padding: padding,
+        sliverHeadHeight: sliverHeadHeight,
+        loadmore: () => _loadmore(context),
+        callback: (exposureList) => _exposureCallback(context, exposureList),
+        child: longList(context)
+      );
     }
   }
 
@@ -92,10 +106,10 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
       showGlowTrailing: false,
       child: Selector<LongListProvider<T>, Tuple4<int, bool, bool, bool>>(
         selector: (_, provider) => Tuple4(
-          provider.list.length,
-          provider.isLoading,
-          provider.hasMore,
-          provider.hasError,
+          provider.list[id].length,
+          provider.listConfig[id].isLoading,
+          provider.listConfig[id].hasMore,
+          provider.listConfig[id].hasError,
         ),
         shouldRebuild: (pre, next) => pre != next,
         builder: (_, data, __) {
@@ -104,8 +118,11 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
             return RefreshIndicator(
               onRefresh: () => _onRefresh(_provider),
               child: LongListBuilder(
+                id: id,
                 mode: mode,
                 shrinkWrap: shrinkWrap,
+                physics: physics,
+                cacheExtent: cacheExtent,
                 provider: _provider,
                 controller: controller,
                 scrollDirection: scrollDirection,
@@ -115,7 +132,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
                 sliverHead: sliverHead,
                 sliverChildren: sliverChildren,
                 child: (context, index) {
-                  if (!data.item3 && _provider.list.length == index) {
+                  if (!data.item3 && _provider.list[id].length == index) {
                     return LongListNoMore(
                       child: nomore
                     );
@@ -127,7 +144,7 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
                   } else {
                     return Selector<LongListProvider<T>, T>(
                       shouldRebuild: (pre, next) => pre != next,
-                      selector: (_, provider) => provider.list[index],
+                      selector: (_, provider) => provider.list[id][index],
                       builder: (_, data, __) {
                         return itemWidget(
                           context,

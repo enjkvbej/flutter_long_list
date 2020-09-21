@@ -2,11 +2,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_long_list/src/store/long_list_provider.dart';
+import 'package:provider/provider.dart';
 import '../utils/exposure.dart';
 
 typedef ExposureCallback = void Function(List<ToExposureItem> list);
 
-class ExposureListener extends StatelessWidget {
+class ExposureListener<T extends Clone<T>> extends StatelessWidget {
+  final String id;
   final Function loadmore;
   final Widget child;
   final ExposureCallback callback;
@@ -17,6 +20,7 @@ class ExposureListener extends StatelessWidget {
 
   ExposureListener({
     Key key,
+    this.id,
     this.child,
     this.callback,
     this.loadmore,
@@ -26,8 +30,9 @@ class ExposureListener extends StatelessWidget {
     this.exposure,
   }) : super(key: key);
 
-  bool _onNotification(ScrollNotification notice) {
-    
+  bool _onNotification(context, ScrollNotification notice) {
+    LongListProvider<T> longListProvider =
+      Provider.of<LongListProvider<T>>(context, listen: false);
     if (notice.metrics.pixels >= notice.metrics.maxScrollExtent - 100) {
       loadmore();
     }
@@ -59,6 +64,10 @@ class ExposureListener extends StatelessWidget {
       }
     }
     sliverMultiBoxAdaptorElement.visitChildren(onVisitChildren);
+    if (longListProvider.listConfig[id].isLoading && endIndex == longListProvider.list[id].length) {
+      endIndex--;
+    }
+    // print('firstIndex${firstIndex}, endIndex${endIndex}');
     callback(exposure.changeExposure(firstIndex, endIndex, startTime));
     return false;
   }
@@ -77,7 +86,7 @@ class ExposureListener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(child: child, onNotification: _onNotification);
+    return NotificationListener<ScrollNotification>(child: child, onNotification: (_) => _onNotification(context, _));
   }
 }
 

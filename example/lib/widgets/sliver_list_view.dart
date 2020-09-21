@@ -13,7 +13,7 @@ class SliverListViewDemo extends StatefulWidget {
 }
 
 class _SliverListViewDemoState extends State<SliverListViewDemo> {
-  String id = 'grid_view';
+  String id = 'sliver_list_view';
   @override
   initState() {
     _init();
@@ -47,9 +47,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
 
   @override
   Widget build(BuildContext context) {
-    print(Provider.of<LongListStore>(context).list);
     return Scaffold(
-      backgroundColor: Colors.black,
       body: LongList<FeedItem>(
         id: id,
         mode: LongListMode.sliver_list,
@@ -67,7 +65,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
         itemWidget: itemWidget,
         exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
           exposureList.forEach((item) {
-            print('上报数据：${provider.list[item.index].color} ${item.index} ${item.time}');
+            print('上报数据：${provider.list[id][item.index].color} ${item.index} ${item.time}');
           });
         },
       )
@@ -87,7 +85,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
         children: [
           GestureDetector(
             onTap: () {
-              provider.deleteItem(index);
+              provider.removeItem(id, index);
             },
             child: Text(
               'delete${index}'
@@ -96,7 +94,7 @@ class _SliverListViewDemoState extends State<SliverListViewDemo> {
           GestureDetector(
             onTap: () {
               data.like = !data.like;
-              provider.changeItem(index, data);
+              provider.changeItem(id, index, data);
             },
             child: Icon(
               data.like ? Icons.favorite : Icons.favorite_border

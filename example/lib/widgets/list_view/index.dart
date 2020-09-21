@@ -1,21 +1,31 @@
+import 'package:example/api/http.dart';
+import 'package:example/model/feed_item.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_long_list/flutter_long_list.dart';
-import '../api/http.dart';
-import '../model/feed_item.dart';
+import 'package:provider/provider.dart';
 
-class GridViewDemo extends StatefulWidget {
-  GridViewDemo({Key key}) : super(key: key);
+class ListIndex extends StatefulWidget {
+  ListIndex({Key key}) : super(key: key);
 
   @override
-  _GridViewDemoState createState() => _GridViewDemoState();
+  _ListIndexState createState() => _ListIndexState();
 }
 
-class _GridViewDemoState extends State<GridViewDemo> {
-  String id = 'grid_view';
+class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixin{
+  String id = 'list_view';
+  ScrollController scrollController = new ScrollController();
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   initState() {
     _init();
+    // 初始化触发滚动 上报数据
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(Duration(milliseconds: 2000), () {
+        scrollController.position.didEndScroll();
+      });
+    });
     super.initState();
   }
 
@@ -24,13 +34,13 @@ class _GridViewDemoState extends State<GridViewDemo> {
       Provider.of<LongListProvider<FeedItem>>(context, listen: false);
     longListProvider.init(
       id: id,
-      pageSize: 5,
+      pageSize: 10,
       request: (int offset) async => await _getList(offset),
     );
   }
   
   _getList(int offset) async{
-    final result = await api(0, 5);
+    final result = await api(0, 10);
     print(result);
     if (result['list'] != null) {
       return {
@@ -49,19 +59,27 @@ class _GridViewDemoState extends State<GridViewDemo> {
     return Scaffold(
       body: LongList<FeedItem>(
         id: id,
+        controller: scrollController,
+        itemWidget: itemWidget,
         exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
           exposureList.forEach((item) {
             print('上报数据：${provider.list[id][item.index].color} ${item.index} ${item.time}');
           });
         },
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10.0,
-          mainAxisSpacing: 10.0,
-        ),
-        padding: EdgeInsets.only(left: 10, right: 10),
-        mode: LongListMode.grid,
-        itemWidget: itemWidget,
+        nomore: (init) {
+          return Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(top: 40, bottom: 40),
+            child: Text(
+              init ? '暂无相关内容...' : '已经到底了哦...',
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.5),
+                fontWeight: FontWeight.bold,
+                fontSize: 13
+              )
+            )
+          );
+        }
       )
     );
   }
@@ -82,13 +100,18 @@ class _GridViewDemoState extends State<GridViewDemo> {
               provider.removeItem(id, index);
             },
             child: Text(
-              'delete${index}'
+              'delete ${data.text} ${index}'
             )
           ),
           GestureDetector(
             onTap: () {
               data.like = !data.like;
               provider.changeItem(id, index, data);
+              if (data.like) {
+                provider.addItem('list_like', 0, data);
+              } else {
+                provider.removeItem('list_like', 0);
+              }
             },
             child: Icon(
               data.like ? Icons.favorite : Icons.favorite_border

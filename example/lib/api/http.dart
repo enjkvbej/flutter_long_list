@@ -10,9 +10,11 @@ Future api(int offset, int number) {
   List<FeedItem> list = List();
   Map<String, dynamic> result;
   FeedItem _getItem () {
+    var rng = new Random();
     return FeedItem(
       Color.fromARGB(255, Random.secure().nextInt(255),
         Random.secure().nextInt(255), Random.secure().nextInt(255)),
+      rng.nextInt(900000) + 100000,
       false
     );
   }

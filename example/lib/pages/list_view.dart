@@ -9,7 +9,6 @@ class ListViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LongListStore longListStore = context.watch<LongListStore>();
     return MaterialButton(
       onPressed: () {
         Navigator.push(
@@ -17,7 +16,7 @@ class ListViewPage extends StatelessWidget {
           PageRouteBuilder(pageBuilder: (_,
               Animation animation, Animation secondaryAnimation) {
             return ChangeNotifierProvider<LongListProvider<FeedItem>>(
-              create: (_) => LongListProvider<FeedItem>(store: longListStore),
+              create: (_) => LongListProvider<FeedItem>(),
               child: ListViewDemo()
             );
           }),

@@ -22,3 +22,7 @@
 
 ## [0.0.7] 2020-09-17
 ### 1.Fix error style.
+
+## [0.0.8] 2020-09-21
+### 1.LongListProvider has stored hashMapList<String, List>.
+### 2.Update ListView demo.
