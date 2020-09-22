@@ -26,3 +26,6 @@
 ## [0.0.8] 2020-09-21
 ### 1.LongListProvider has stored hashMapList<String, List>.
 ### 2.Update ListView demo.
+
+## [0.0.9] 2020-09-21
+### 1.fix bug
