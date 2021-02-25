@@ -12,6 +12,8 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
   Map<String, LongListConfig> _listConfig = {};
   Map<String, List<T>> get list => _hashMapList;
   Map<String, LongListConfig> get listConfig => _listConfig;
+  /// 销毁时的标志位，用来禁止后续对provider操作
+  bool _disposed = false;
   /// 初始化
   /// id: 唯一标识  全局数据时必须需要
   /// request function (offset, num) => list or error
@@ -60,6 +62,9 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
   }
   /// 添加数组
   addItems(String id, List<T> data) {
+    if(_disposed) {
+      return;
+    }
     _hashMapList[id].addAll(data);
     if (_listConfig[id].callback != null) {
       _listConfig[id].callback(_hashMapList[id]);
@@ -119,6 +124,12 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
       print('list id${id}没有初始化');
     }
   }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
 }
 
 abstract class Clone<T> {
@@ -143,7 +154,7 @@ class LongListConfig {
     this.pageSize,
     this.request,
     this.callback,
-    this.isLoading = false,
+    this.isLoading = true, /// 初始化改为true
     this.hasMore = true,
     this.hasError = false,
   });
