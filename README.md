@@ -20,7 +20,7 @@ Add it to your pubspec.yaml file:
 
 ```dart
   dependencies:
-     flutter_long_list: ^0.0.9
+     flutter_long_list: ^0.1.1
 ```
 
 Install packages from the command line
@@ -35,7 +35,7 @@ If you like this package, consider supporting it by giving it a star on [Github]
 
 How to create a GridView By flutter_long_list:
 
-step1 Use ChangeNotifierProvider
+**Step1 Use ChangeNotifierProvider**
 
 ```dart
  ChangeNotifierProvider<LongListProvider<T>>(
@@ -44,12 +44,13 @@ step1 Use ChangeNotifierProvider
  );
 ```
 
-step2 Init GridView
-·param id: list custom id is required.
+**Step2 Init GridView**
 
-·param pageSize: list load more need pagesize to request.
+·param `id`: list custom id is required.
 
-·param request: list load more function, offset = page * pageSize(page initialValue = 0).
+·param `pageSize`: list load more need pagesize to request.
+
+·param `request`: list load more function, offset = page * pageSize(page initialValue = 0).
 
 ```dart
 @override
@@ -77,11 +78,15 @@ _getList(offset) {
 }
 ```
 
-step3 Render GridView
-·param id: list custom id you have inited.
-·param gridDelegate: gridView property.
-·param mode: enum LongListMode {list, grid, sliver_list, sliver_grid}
-·param itemWidget: `(BuildContext context, LongListProvider<T> provider, String id, int index, T data) { return your custom widget }`
+**Step3 Render GridView**
+
+·param `id`: list custom id you have inited.
+
+·param `gridDelegate`: gridView property.
+
+·param `mode`: enum LongListMode {list, grid, sliver_list, sliver_grid}
+
+·param `itemWidget`: `(BuildContext context, LongListProvider<T> provider, String id, int index, T data) { return your custom widget }`
 
 ```dart
 LongList<T>(
@@ -101,7 +106,7 @@ Then you have finished to create a LongList GridView Widget easily!
 
 ## Notice
 
-1.You can use it to make your list data shared. Need to be determined the list has inited before use these functions. Please see ListView example.
+1. You can use it to make your list data shared. Need to be determined the list has inited before use these functions. Please see ListView example.
 
 ```dart
 prvider.list[id].addItem(id, index, data); // add item
@@ -110,7 +115,7 @@ prvider.list[id].changeItem(id, index, data); // delete item
 prvider.list[id].removeItem(id, index); // remove item
 ```
 
-2.If you want use exposure listener, only add exposureCallback as:
+2. If you want use exposure listener, only add exposureCallback as:
 
 ```dart
 LongList<T>(
