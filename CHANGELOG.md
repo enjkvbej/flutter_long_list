@@ -49,3 +49,7 @@
 ### 1.add release provider
 
 ### 2.loading is default true
+
+## [0.1.2] 2021-02-26
+
+### 1.add scrollToIndex method

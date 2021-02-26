@@ -1,5 +1,10 @@
+
+
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_long_list/src/widgets/multi_exposure_listener.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -14,14 +19,14 @@ import './exposure_listener.dart';
 
 enum LongListMode {grid, list, sliver_grid, sliver_list, sliver_custom}
 
-class LongList<T extends Clone<T>> extends StatelessWidget {
+class LongList<T extends Clone<T>> extends StatefulWidget {
   final String id;
   final bool shrinkWrap;
   final ScrollPhysics physics;
   final LongListMode mode;
   final EdgeInsets padding;
   final double cacheExtent;
-  final ScrollController controller;
+  final ScrollToIndexController controller;
   final SliverGridDelegate gridDelegate;
   final Axis scrollDirection;
   final Function(BuildContext context, LongListProvider<T> provider, String id,
@@ -56,33 +61,53 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
   }) : assert(itemWidget != null),
     super(key: key);
 
+  @override
+  _LongListWidgetState createState() => _LongListWidgetState<T>();
+}
+
+class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
+  final GlobalKey _scrollKey = GlobalKey();
+  
+  @override
+  void initState() {
+    super.initState();
+    LongListProvider<T> provider = Provider.of<LongListProvider<T>>(context, listen: false);
+    provider.saveScrollKey(widget.id, _scrollKey);
+  }
+
+  @override
+  void dispose() {
+    widget.controller?.dispose();
+    super.dispose();
+  }
+
   void _loadmore(BuildContext context) {
     LongListProvider<T> provider = Provider.of<LongListProvider<T>>(context, listen: false);
-    if (provider.listConfig[id].hasMore && !provider.listConfig[id].hasError && !provider.listConfig[id].isLoading) {
-      provider.loadMore(id);
+    if (provider.listConfig[widget.id].hasMore && !provider.listConfig[widget.id].hasError && !provider.listConfig[widget.id].isLoading) {
+      provider.loadMore(widget.id);
     }
   }
 
   Future _onRefresh(LongListProvider<T> provider) async{
-    await provider.refresh(id);
+    await provider.refresh(widget.id);
   }
   
   void _exposureCallback(BuildContext context, List<ToExposureItem> exposureList) {
     LongListProvider<T> provider = Provider.of<LongListProvider<T>>(context, listen: false);
-    if (exposureList.isNotEmpty && exposureCallback != null) {
-      return exposureCallback(provider, exposureList);
+    if (exposureList.isNotEmpty && widget.exposureCallback != null) {
+      return widget.exposureCallback(provider, exposureList);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (mode != LongListMode.sliver_custom) {
+    if (widget.mode != LongListMode.sliver_custom) {
       return ExposureListener<T>(
-        id: id,
+        id: widget.id,
         scrollDirection: Axis.vertical,
-        exposure: exposure,
-        padding: padding,
-        sliverHeadHeight: sliverHeadHeight,
+        exposure: widget.exposure,
+        padding: widget.padding,
+        sliverHeadHeight: widget.sliverHeadHeight,
         loadmore: () => _loadmore(context),
         callback: (exposureList) => _exposureCallback(context, exposureList),
         child: longList(context)
@@ -90,9 +115,9 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
     } else {
       return MultiExposureListener(
         scrollDirection: Axis.vertical,
-        exposure: exposure,
-        padding: padding,
-        sliverHeadHeight: sliverHeadHeight,
+        exposure: widget.exposure,
+        padding: widget.padding,
+        sliverHeadHeight: widget.sliverHeadHeight,
         loadmore: () => _loadmore(context),
         callback: (exposureList) => _exposureCallback(context, exposureList),
         child: longList(context)
@@ -106,10 +131,10 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
       showGlowTrailing: false,
       child: Selector<LongListProvider<T>, Tuple4<int, bool, bool, bool>>(
         selector: (_, provider) => Tuple4(
-          provider.list[id].length,
-          provider.listConfig[id].isLoading,
-          provider.listConfig[id].hasMore,
-          provider.listConfig[id].hasError,
+          provider.list[widget.id].length,
+          provider.listConfig[widget.id].isLoading,
+          provider.listConfig[widget.id].hasMore,
+          provider.listConfig[widget.id].hasError,
         ),
         shouldRebuild: (pre, next) => pre != next,
         builder: (_, data, __) {
@@ -118,40 +143,44 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
             return RefreshIndicator(
               onRefresh: () => _onRefresh(_provider),
               child: LongListBuilder(
-                id: id,
-                mode: mode,
-                shrinkWrap: shrinkWrap,
-                physics: physics,
-                cacheExtent: cacheExtent,
+                key: _scrollKey,
+                id: widget.id,
+                mode: widget.mode,
+                shrinkWrap: widget.shrinkWrap,
+                physics: widget.physics,
+                cacheExtent: widget.cacheExtent,
                 provider: _provider,
-                controller: controller,
-                scrollDirection: scrollDirection,
-                gridDelegate: gridDelegate,
-                padding: padding,
+                controller: widget.controller,
+                scrollDirection: widget.scrollDirection,
+                gridDelegate: widget.gridDelegate,
+                padding: widget.padding,
                 itemCount: (data.item2 || !data.item3) ? data.item1 + 1 : data.item1,
-                sliverHead: sliverHead,
-                sliverChildren: sliverChildren,
+                sliverHead: widget.sliverHead,
+                sliverChildren: widget.sliverChildren,
                 child: (context, index) {
-                  if (!data.item3 && _provider.list[id].length == index) {
+                  if (!data.item3 && _provider.list[widget.id].length == index) {
                     return LongListNoMore(
-                      child: nomore
+                      child: widget.nomore
                     );
                   } else if (data.item2 && data.item1 == index) {
                     return LongListLoading(
                       position: LoadingPosition.bottom,
-                      child: loading,
+                      child: widget.loading,
                     );
                   } else {
                     return Selector<LongListProvider<T>, T>(
                       shouldRebuild: (pre, next) => pre != next,
-                      selector: (_, provider) => provider.list[id][index],
+                      selector: (_, provider) => provider.list[widget.id][index],
                       builder: (_, data, __) {
-                        return itemWidget(
-                          context,
-                          _provider,
-                          id,
-                          index,
-                          data.clone(),
+                        return Container(
+                          key: data.globalKey,
+                          child: widget.itemWidget(
+                            context,
+                            _provider,
+                            widget.id,
+                            index,
+                            data.clone(),
+                          )
                         );
                       }
                     );
@@ -163,14 +192,14 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
             if (!data.item3) {
               return LongListNoMore(
                 init: true,
-                child: nomore,
+                child: widget.nomore,
               );
             } else if (data.item4) {
-              return LongListError<T>(id: id);
+              return LongListError<T>(id: widget.id);
             } else {
               return LongListLoading(
                 position: LoadingPosition.center,
-                child: loading,
+                child: widget.loading,
               );
             }
           }
@@ -179,3 +208,27 @@ class LongList<T extends Clone<T>> extends StatelessWidget {
     );
   }
 }
+
+class ScrollToIndexController extends ScrollController {
+  ScrollToIndexController() : super();
+  /// 滑动到指定位置
+  void scrollToIndex(LongListProvider provider, String id, int index, {bool animate: true, Duration duration, Curves curve, double offsetTop: 0.0}) {
+    if (index > provider.list[id].length) {
+      return;
+    }
+    dynamic item = provider.list[id][index];
+    if (item.globalKey.currentContext != null) {
+      RenderBox renderBox = item.globalKey.currentContext.findRenderObject();
+      double dy = renderBox.localToGlobal(Offset.zero, ancestor: provider.listConfig[id].key.currentContext.findRenderObject()).dy;
+      var offset = dy + super.offset;
+      if (animate) {
+        super.animateTo(offset - offsetTop, duration: duration ?? Duration(milliseconds: 100), curve: curve ?? Curves.linear);
+      } else {
+        super.jumpTo(offset - offsetTop);
+      }
+    } else {
+      print("Please bind the key to the widget in the outermost layer of the Item layout");
+    }
+  }
+}
+

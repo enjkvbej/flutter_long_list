@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show ChangeNotifier;
+import 'package:flutter/material.dart' show ChangeNotifier, GlobalKey;
 
 /* 
  * 通用列表数据
@@ -60,6 +60,11 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
     }
     return true;
   }
+
+  saveScrollKey(String id, GlobalKey key) {
+    _listConfig[id].key = key;
+  }
+
   /// 添加数组
   addItems(String id, List<T> data) {
     if(_disposed) {
@@ -133,10 +138,12 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
 }
 
 abstract class Clone<T> {
+  final GlobalKey globalKey = GlobalKey();
   T clone();
 }
 
 class LongListConfig {
+  GlobalKey key;
   String id;
   int offset;
   int total;
@@ -148,6 +155,7 @@ class LongListConfig {
   bool hasError;
 
   LongListConfig({
+    this.key,
     this.id,
     this.offset = 0,
     this.total = 0,

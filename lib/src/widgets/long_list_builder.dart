@@ -13,7 +13,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final Axis scrollDirection;
   final SliverGridDelegate gridDelegate;
-  final ScrollController controller;
+  final ScrollToIndexController controller;
   final Function(BuildContext context, int index) child;
   final Widget sliverHead;
   final List<Widget> sliverChildren;

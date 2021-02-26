@@ -24,8 +24,9 @@ class _ListLikeState extends State<ListLike> with AutomaticKeepAliveClientMixin{
     );
   }
 
-  Widget itemWidget(BuildContext context, LongListProvider<FeedItem> provider, String id, int index, FeedItem data) {
+  Widget itemWidget(BuildContext context, LongListProvider<FeedItem> provider, String id, int index, FeedItem data, {GlobalKey key}) {
     return  Container(
+      key: key,
       height: 200,
       width: double.infinity,
       alignment: Alignment.center,

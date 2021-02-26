@@ -13,6 +13,8 @@ class GridViewDemo extends StatefulWidget {
 
 class _GridViewDemoState extends State<GridViewDemo> {
   String id = 'grid_view';
+  ScrollToIndexController scrollController = ScrollToIndexController();
+
   @override
   initState() {
     _init();
@@ -30,7 +32,7 @@ class _GridViewDemoState extends State<GridViewDemo> {
   }
   
   _getList(int offset) async{
-    final result = await api(0, 5);
+    final result = await api(0, 10);
     print(result);
     if (result['list'] != null) {
       return {
@@ -49,11 +51,13 @@ class _GridViewDemoState extends State<GridViewDemo> {
     return Scaffold(
       body: LongList<FeedItem>(
         id: id,
+        controller: scrollController,
         exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
           exposureList.forEach((item) {
             print('上报数据：${provider.list[id][item.index].color} ${item.index} ${item.time}');
           });
         },
+        cacheExtent: double.infinity,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 10.0,
@@ -68,7 +72,7 @@ class _GridViewDemoState extends State<GridViewDemo> {
 
   Widget itemWidget(BuildContext context, LongListProvider<FeedItem> provider, String id, int index, FeedItem data) {
     print('rebuild${index}');
-    return  Container(
+    return Container(
       height: 200,
       width: double.infinity,
       alignment: Alignment.center,
@@ -83,6 +87,14 @@ class _GridViewDemoState extends State<GridViewDemo> {
             },
             child: Text(
               'delete${index}'
+            )
+          ),
+          GestureDetector(
+            onTap: () {
+              scrollController.scrollToIndex(provider, id, 7);
+            },
+            child: Text(
+              'scrollTo'
             )
           ),
           GestureDetector(

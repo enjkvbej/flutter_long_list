@@ -102,7 +102,7 @@ class _SliverCustomViewDemoState extends State<SliverCustomViewDemo> {
   }
   Widget itemWidget(BuildContext context, LongListProvider<FeedItem> provider, String id, int index, FeedItem data) {
     print('rebuild${index}');
-    return  Container(
+    return Container(
       height: 200,
       width: double.infinity,
       alignment: Alignment.center,

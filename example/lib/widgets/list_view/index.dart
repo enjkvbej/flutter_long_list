@@ -13,14 +13,14 @@ class ListIndex extends StatefulWidget {
 
 class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixin{
   String id = 'list_view';
-  ScrollController scrollController = new ScrollController();
+  ScrollToIndexController scrollController = ScrollToIndexController();
   @override
   bool get wantKeepAlive => true;
 
   @override
   initState() {
     _init();
-    // 初始化触发滚动 上报数据
+    //初始化触发滚动 上报数据
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(Duration(milliseconds: 2000), () {
         scrollController.position.didEndScroll();
@@ -61,6 +61,7 @@ class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixi
         id: id,
         controller: scrollController,
         itemWidget: itemWidget,
+        cacheExtent: double.infinity,
         exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
           exposureList.forEach((item) {
             print('上报数据：${provider.list[id][item.index].color} ${item.index} ${item.time}');
@@ -101,6 +102,14 @@ class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixi
             },
             child: Text(
               'delete ${data.text} ${index}'
+            )
+          ),
+          GestureDetector(
+            onTap: () {
+              scrollController.scrollToIndex(provider, id, 6);
+            },
+            child: Text(
+              'scrollTo'
             )
           ),
           GestureDetector(
