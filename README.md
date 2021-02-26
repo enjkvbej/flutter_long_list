@@ -117,7 +117,7 @@ prvider.list[id].changeItem(id, index, data); // delete item
 prvider.list[id].removeItem(id, index); // remove item
 ```
 
-* data must have Clone method.
+* your data must have clone method, because provider `Selector` need.
 
 ### 2. If you want use exposure listener, only add exposureCallback
 
