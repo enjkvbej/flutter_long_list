@@ -53,3 +53,7 @@
 ## [0.1.2] 2021-02-26
 
 ### 1.add scrollToIndex method
+
+## [0.1.3] 2021-03-03
+
+### 1.fix longlist data length is 0 bug

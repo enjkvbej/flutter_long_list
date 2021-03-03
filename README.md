@@ -22,7 +22,7 @@ Add it to your pubspec.yaml file:
 
 ```dart
   dependencies:
-     flutter_long_list: 0.1.2
+     flutter_long_list: 0.1.3
 ```
 
 Install packages from the command line

@@ -139,7 +139,7 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
         shouldRebuild: (pre, next) => pre != next,
         builder: (_, data, __) {
           LongListProvider<T> _provider = context.read<LongListProvider<T>>();
-          if (data.item1 >= 0) {
+          if (data.item1 > 0) {
             return RefreshIndicator(
               onRefresh: () => _onRefresh(_provider),
               child: LongListBuilder(
