@@ -57,3 +57,7 @@
 ## [0.1.3] 2021-03-03
 
 ### 1.fix longlist data length is 0 bug
+
+## [0.1.4] 2021-03-04
+
+### 1.fix list horizontal bug

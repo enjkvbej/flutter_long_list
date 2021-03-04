@@ -22,7 +22,7 @@ Add it to your pubspec.yaml file:
 
 ```dart
   dependencies:
-     flutter_long_list: 0.1.3
+     flutter_long_list: 0.1.4
 ```
 
 Install packages from the command line
@@ -111,10 +111,10 @@ Then you have finished to create a LongList GridView Widget easily!
 ### 1. You can use it to make your list data shared. Need to be determined the list has inited before use these functions. Please see ListView example
 
 ```dart
-prvider.list[id].addItem(id, index, data); // add item
-prvider.list[id].addItems(id, data); // add list
-prvider.list[id].changeItem(id, index, data); // delete item
-prvider.list[id].removeItem(id, index); // remove item
+prvider.addItem(id, index, data); // add item
+prvider.addItems(id, data); // add list
+prvider.changeItem(id, index, data); // delete item
+prvider.removeItem(id, index); // remove item
 ```
 
 * your data must have clone method, because provider `Selector` need.

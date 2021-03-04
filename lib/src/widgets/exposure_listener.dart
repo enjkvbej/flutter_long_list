@@ -36,10 +36,8 @@ class ExposureListener<T extends Clone<T>> extends StatelessWidget {
     if (notice.metrics.pixels >= notice.metrics.maxScrollExtent - 100) {
       loadmore();
     }
-
     final sliverMultiBoxAdaptorElement = _findSliverMultiBoxAdaptorElement(notice.context);
     if (sliverMultiBoxAdaptorElement == null) return false;
-   
     int firstIndex = sliverMultiBoxAdaptorElement.childCount;
     assert(firstIndex != null);
     int endIndex = -1;

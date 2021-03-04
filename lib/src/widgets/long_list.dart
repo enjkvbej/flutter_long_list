@@ -104,7 +104,7 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
     if (widget.mode != LongListMode.sliver_custom) {
       return ExposureListener<T>(
         id: widget.id,
-        scrollDirection: Axis.vertical,
+        scrollDirection: widget.scrollDirection,
         exposure: widget.exposure,
         padding: widget.padding,
         sliverHeadHeight: widget.sliverHeadHeight,
@@ -114,7 +114,7 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
       );
     } else {
       return MultiExposureListener(
-        scrollDirection: Axis.vertical,
+        scrollDirection: widget.scrollDirection,
         exposure: widget.exposure,
         padding: widget.padding,
         sliverHeadHeight: widget.sliverHeadHeight,
@@ -212,19 +212,21 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
 class ScrollToIndexController extends ScrollController {
   ScrollToIndexController() : super();
   /// 滑动到指定位置
-  void scrollToIndex(LongListProvider provider, String id, int index, {bool animate: true, Duration duration, Curves curve, double offsetTop: 0.0}) {
+  void scrollToIndex(LongListProvider provider, String id, int index, {bool animate: true, Duration duration, Curves curve, double offset: 0.0, Axis axis = Axis.vertical}) {
     if (index > provider.list[id].length) {
       return;
     }
     dynamic item = provider.list[id][index];
     if (item.globalKey.currentContext != null) {
       RenderBox renderBox = item.globalKey.currentContext.findRenderObject();
-      double dy = renderBox.localToGlobal(Offset.zero, ancestor: provider.listConfig[id].key.currentContext.findRenderObject()).dy;
-      var offset = dy + super.offset;
+      Offset offsetToGlobal = renderBox.localToGlobal(Offset.zero, ancestor: provider.listConfig[id].key.currentContext.findRenderObject());
+      double d = axis == Axis.vertical ? offsetToGlobal.dy : offsetToGlobal.dx;
+      var _offset = d + super.offset;
+      print(_offset);
       if (animate) {
-        super.animateTo(offset - offsetTop, duration: duration ?? Duration(milliseconds: 100), curve: curve ?? Curves.linear);
+        super.animateTo(_offset - offset, duration: duration ?? Duration(milliseconds: 100), curve: curve ?? Curves.linear);
       } else {
-        super.jumpTo(offset - offsetTop);
+        super.jumpTo(_offset - offset);
       }
     } else {
       print("Please bind the key to the widget in the outermost layer of the Item layout");
