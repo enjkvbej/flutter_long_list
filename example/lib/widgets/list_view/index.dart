@@ -62,6 +62,7 @@ class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixi
         controller: scrollController,
         itemWidget: itemWidget,
         cacheExtent: double.infinity,
+        scrollDirection: Axis.horizontal,
         exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
           exposureList.forEach((item) {
             print('上报数据：${provider.list[id][item.index].color} ${item.index} ${item.time}');
@@ -87,9 +88,9 @@ class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixi
 
   Widget itemWidget(BuildContext context, LongListProvider<FeedItem> provider, String id, int index, FeedItem data) {
     print('rebuild${index}');
-    return  Container(
+    return Container(
       height: 200,
-      width: double.infinity,
+      width: 200,
       alignment: Alignment.center,
       color: data.color,
       child: Row(
@@ -106,7 +107,7 @@ class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixi
           ),
           GestureDetector(
             onTap: () {
-              scrollController.scrollToIndex(provider, id, 6);
+              scrollController.scrollToIndex(provider, id, 6, axis: Axis.horizontal, offset: 10);
             },
             child: Text(
               'scrollTo'

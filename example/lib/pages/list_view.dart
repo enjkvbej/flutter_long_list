@@ -25,7 +25,7 @@ class ListViewPage extends StatelessWidget {
       color: Colors.grey,
       height: 40,
       child: Text(
-        'ListView'
+        'ListView',
       ),
     );
   }
