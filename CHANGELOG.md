@@ -61,3 +61,11 @@
 ## [0.1.4] 2021-03-04
 
 ### 1.fix list horizontal bug
+
+## [0.1.5] 2021-03-10
+
+### 1.delete mode sliver_custom
+
+### 2.add sliver_tabbar_view demo
+
+### 3.add `needRfresh` param

@@ -15,6 +15,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
   final SliverGridDelegate gridDelegate;
   final ScrollToIndexController controller;
   final Function(BuildContext context, int index) child;
+  final Widget sliverAppBar;
   final Widget sliverHead;
   final List<Widget> sliverChildren;
   final bool shrinkWrap;
@@ -32,6 +33,7 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
     this.controller,
     this.gridDelegate,
     this.child,
+    this.sliverAppBar,
     this.sliverHead,
     this.sliverChildren,
     Key key
@@ -73,60 +75,59 @@ class LongListBuilder<T extends Clone<T>> extends StatelessWidget {
         itemBuilder: child,
       );
     } else if (mode == LongListMode.sliver_grid) {
+      List<Widget> slivers = [
+        ExtendedSliverGrid(
+          delegate: SliverChildBuilderDelegate(
+            child,
+            childCount: itemCount,
+          ),
+          gridDelegate: gridDelegate,
+          extendedListDelegate: getExtendedListDelegate(),
+        ),
+      ];
+      if (sliverAppBar != null) {
+        slivers.insert(0, sliverAppBar);
+      }
+      if (sliverHead != null) {
+        slivers.insert(slivers.length == 2 ? 1 : 0, sliverHead);
+      }
+      if (sliverChildren != null) {
+        slivers.insertAll(slivers.length - 1, sliverChildren);
+      }
       return CustomScrollView(
         scrollDirection: scrollDirection,
         controller: controller,
         shrinkWrap: shrinkWrap,
         cacheExtent: cacheExtent,
         physics: physics,
-        slivers: <Widget>[
-          sliverHead,
-          ExtendedSliverGrid(
-            delegate: SliverChildBuilderDelegate(
-              child,
-              childCount: itemCount,
-            ),
-            gridDelegate: gridDelegate,
-            extendedListDelegate: getExtendedListDelegate(),
-          ),
-        ],
+        slivers: slivers
       );
     } else if (mode == LongListMode.sliver_list) {
+      List<Widget> slivers = [
+        ExtendedSliverList(
+          extendedListDelegate: getExtendedListDelegate(),
+          delegate: SliverChildBuilderDelegate(
+            child,
+            childCount: itemCount,
+          ),
+        ),
+      ];
+      if (sliverAppBar != null) {
+        slivers.insert(0, sliverAppBar);
+      }
+      if (sliverHead != null) {
+        slivers.insert(slivers.length == 2 ? 1 : 0, sliverHead);
+      }
+      if (sliverChildren != null) {
+        slivers.insertAll(slivers.length - 1, sliverChildren);
+      }
       return CustomScrollView(
         scrollDirection: scrollDirection,
         controller: controller,
         shrinkWrap: shrinkWrap,
         cacheExtent: cacheExtent,
         physics: physics,
-        slivers: <Widget>[
-          sliverHead,
-          ExtendedSliverList(
-            extendedListDelegate: getExtendedListDelegate(),
-            delegate: SliverChildBuilderDelegate(
-              child,
-              childCount: itemCount,
-            ),
-          ),
-        ],
-      );
-    } else if (mode == LongListMode.sliver_custom) {
-      return CustomScrollView(
-        scrollDirection: scrollDirection,
-        controller: controller,
-        shrinkWrap: shrinkWrap,
-        cacheExtent: cacheExtent,
-        physics: physics,
-        slivers: <Widget>[
-          sliverHead,
-          ...sliverChildren,
-          ExtendedSliverList(
-            extendedListDelegate: getExtendedListDelegate(),
-            delegate: SliverChildBuilderDelegate(
-              child,
-              childCount: itemCount,
-            ),
-          ),
-        ],
+        slivers: slivers
       );
     } else {
       return Text('LongListMode传值错误');

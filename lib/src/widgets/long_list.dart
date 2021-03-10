@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_long_list/src/widgets/multi_exposure_listener.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import '../store/long_list_provider.dart';
@@ -17,7 +16,7 @@ import './overflow_widget.dart';
 import './error.dart';
 import './exposure_listener.dart';
 
-enum LongListMode {grid, list, sliver_grid, sliver_list, sliver_custom}
+enum LongListMode {grid, list, sliver_grid, sliver_list}
 
 class LongList<T extends Clone<T>> extends StatefulWidget {
   final String id;
@@ -32,8 +31,10 @@ class LongList<T extends Clone<T>> extends StatefulWidget {
   final Function(BuildContext context, LongListProvider<T> provider, String id,
       int index, T data) itemWidget;
   final Function exposureCallback;
+  final bool needRefresh;
   final Widget loading;
   final Function(bool init) nomore;
+  final Widget sliverAppBar;
   final Widget sliverHead;
   final double sliverHeadHeight;
   final List<Widget> sliverChildren;
@@ -49,12 +50,14 @@ class LongList<T extends Clone<T>> extends StatefulWidget {
     @required this.itemWidget,
     this.mode = LongListMode.list,
     this.padding = const EdgeInsets.all(0.0),
+    this.needRefresh = true,
     this.loading,
     this.nomore,
     this.controller,
     this.gridDelegate,
     this.scrollDirection = Axis.vertical,
     this.exposureCallback,
+    this.sliverAppBar,
     this.sliverHead,
     this.sliverChildren,
     this.sliverHeadHeight,
@@ -101,28 +104,16 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.mode != LongListMode.sliver_custom) {
-      return ExposureListener<T>(
-        id: widget.id,
-        scrollDirection: widget.scrollDirection,
-        exposure: widget.exposure,
-        padding: widget.padding,
-        sliverHeadHeight: widget.sliverHeadHeight,
-        loadmore: () => _loadmore(context),
-        callback: (exposureList) => _exposureCallback(context, exposureList),
-        child: longList(context)
-      );
-    } else {
-      return MultiExposureListener(
-        scrollDirection: widget.scrollDirection,
-        exposure: widget.exposure,
-        padding: widget.padding,
-        sliverHeadHeight: widget.sliverHeadHeight,
-        loadmore: () => _loadmore(context),
-        callback: (exposureList) => _exposureCallback(context, exposureList),
-        child: longList(context)
-      );
-    }
+    return ExposureListener<T>(
+      id: widget.id,
+      scrollDirection: widget.scrollDirection,
+      exposure: widget.exposure,
+      padding: widget.padding,
+      sliverHeadHeight: widget.sliverHeadHeight,
+      loadmore: () => _loadmore(context),
+      callback: (exposureList) => _exposureCallback(context, exposureList),
+      child: longList(context)
+    );
   }
 
   Widget longList(BuildContext context) {
@@ -140,54 +131,14 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
         builder: (_, data, __) {
           LongListProvider<T> _provider = context.read<LongListProvider<T>>();
           if (data.item1 > 0) {
-            return RefreshIndicator(
-              onRefresh: () => _onRefresh(_provider),
-              child: LongListBuilder(
-                key: _scrollKey,
-                id: widget.id,
-                mode: widget.mode,
-                shrinkWrap: widget.shrinkWrap,
-                physics: widget.physics,
-                cacheExtent: widget.cacheExtent,
-                provider: _provider,
-                controller: widget.controller,
-                scrollDirection: widget.scrollDirection,
-                gridDelegate: widget.gridDelegate,
-                padding: widget.padding,
-                itemCount: (data.item2 || !data.item3) ? data.item1 + 1 : data.item1,
-                sliverHead: widget.sliverHead,
-                sliverChildren: widget.sliverChildren,
-                child: (context, index) {
-                  if (!data.item3 && _provider.list[widget.id].length == index) {
-                    return LongListNoMore(
-                      child: widget.nomore
-                    );
-                  } else if (data.item2 && data.item1 == index) {
-                    return LongListLoading(
-                      position: LoadingPosition.bottom,
-                      child: widget.loading,
-                    );
-                  } else {
-                    return Selector<LongListProvider<T>, T>(
-                      shouldRebuild: (pre, next) => pre != next,
-                      selector: (_, provider) => provider.list[widget.id][index],
-                      builder: (_, data, __) {
-                        return Container(
-                          key: data.globalKey,
-                          child: widget.itemWidget(
-                            context,
-                            _provider,
-                            widget.id,
-                            index,
-                            data.clone(),
-                          )
-                        );
-                      }
-                    );
-                  }
-                },
-              )
-            );
+            if (widget.needRefresh) {
+              return RefreshIndicator(
+                onRefresh: () => _onRefresh(_provider),
+                child: longListBuild(_provider, data)
+              );
+            } else {
+              return longListBuild(_provider, data);
+            }
           } else {
             if (!data.item3) {
               return LongListNoMore(
@@ -205,6 +156,55 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
           }
         }
       ),
+    );
+  }
+
+  LongListBuilder<T> longListBuild(_provider, data) {
+    return LongListBuilder(
+      key: _scrollKey,
+      id: widget.id,
+      mode: widget.mode,
+      shrinkWrap: widget.shrinkWrap,
+      physics: widget.physics,
+      cacheExtent: widget.cacheExtent,
+      provider: _provider,
+      controller: widget.controller,
+      scrollDirection: widget.scrollDirection,
+      gridDelegate: widget.gridDelegate,
+      padding: widget.padding,
+      itemCount: (data.item2 || !data.item3) ? data.item1 + 1 : data.item1,
+      sliverAppBar: widget.sliverAppBar,
+      sliverHead: widget.sliverHead,
+      sliverChildren: widget.sliverChildren,
+      child: (context, index) {
+        if (!data.item3 && _provider.list[widget.id].length == index) {
+          return LongListNoMore(
+            child: widget.nomore
+          );
+        } else if (data.item2 && data.item1 == index) {
+          return LongListLoading(
+            position: LoadingPosition.bottom,
+            child: widget.loading,
+          );
+        } else {
+          return Selector<LongListProvider<T>, T>(
+            shouldRebuild: (pre, next) => pre != next,
+            selector: (_, provider) => provider.list[widget.id][index],
+            builder: (_, data, __) {
+              return Container(
+                key: data.globalKey,
+                child: widget.itemWidget(
+                  context,
+                  _provider,
+                  widget.id,
+                  index,
+                  data.clone(),
+                )
+              );
+            }
+          );
+        }
+      },
     );
   }
 }
