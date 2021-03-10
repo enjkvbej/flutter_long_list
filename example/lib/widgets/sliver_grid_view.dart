@@ -57,6 +57,9 @@ class _SliverGridViewDemoState extends State<SliverGridViewDemo> {
         ),
         padding: EdgeInsets.only(left: 10, right: 10),
         mode: LongListMode.sliver_grid,
+        sliverAppBar: SliverAppBar(
+          title: Text('111'),
+        ),
         sliverHead: SliverPersistentHeader(
           pinned: true,
           delegate: SliverCustomHeaderDelegate(

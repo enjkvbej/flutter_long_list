@@ -50,7 +50,7 @@ class _SliverCustomViewDemoState extends State<SliverCustomViewDemo> {
     return Scaffold(
       body: LongList<FeedItem>(
         id: id,
-        mode: LongListMode.sliver_custom,
+        mode: LongListMode.sliver_list,
         sliverHead: SliverPersistentHeader(
           pinned: true,
           delegate: SliverCustomHeaderDelegate(
