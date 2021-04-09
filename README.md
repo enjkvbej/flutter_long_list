@@ -22,7 +22,7 @@ Add it to your pubspec.yaml file:
 
 ```dart
   dependencies:
-     flutter_long_list: 0.1.5
+     flutter_long_list: 0.1.6
 ```
 
 Install packages from the command line
@@ -65,17 +65,15 @@ initState() {
   // your code...
 }
 // 'list' & 'total' & 'error' can not be modified. These field will use to loadmore.
-_getList(offset) {
-  final result = await api(0, 5); // your request api
+Future<LongListData> _getList(int offset) async{
+  final result = await api(0, 10);
   if (result['list'] != null) {
-    return {
-      'list': result['list'],
-      'total': result['total']
-    };
+    return LongListData(
+      list: result['list'],
+      total: result['total']
+    );
   } else {
-    return {
-      'error': 'error'
-    };
+    return LongListData(error: 'error');
   }
 }
 ```

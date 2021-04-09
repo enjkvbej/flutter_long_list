@@ -6,11 +6,12 @@ import '../store/long_list_provider.dart';
 
 class LongListError<T extends Clone<T>> extends StatelessWidget {
   final String id;
-  LongListError({@required this.id, Key key}) : super(key: key);
+  final Widget child;
+  LongListError({@required this.id, @required this.child, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return child ?? Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

@@ -43,18 +43,15 @@ class _ListViewDemoState extends State<ListViewDemo>  with SingleTickerProviderS
     );
   }
   
-  _getList(int offset) async{
+  Future<LongListData> _getList(int offset) async{
     final result = await api(0, 10);
-    print(result);
     if (result['list'] != null) {
-      return {
-        'list': result['list'],
-        'total': result['total']
-      };
+      return LongListData(
+        list: result['list'],
+        total: result['total']
+      );
     } else {
-      return {
-        'error': 'error'
-      };
+      return LongListData(error: 'error');
     }
   }
 

@@ -39,18 +39,16 @@ class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixi
     );
   }
   
-  _getList(int offset) async{
+  Future<LongListData> _getList(int offset) async{
     final result = await api(0, 10);
-    print(result);
     if (result['list'] != null) {
-      return {
-        'list': result['list'],
-        'total': result['total']
-      };
+      return LongListData(
+        list: result['list'],
+        total: result['total'],
+        // hasMore: true
+      );
     } else {
-      return {
-        'error': 'error'
-      };
+      return LongListData(error: 'error');
     }
   }
 
@@ -62,7 +60,7 @@ class _ListIndexState extends State<ListIndex> with AutomaticKeepAliveClientMixi
         controller: scrollController,
         itemWidget: itemWidget,
         cacheExtent: double.infinity,
-        scrollDirection: Axis.horizontal,
+        scrollDirection: Axis.vertical,
         exposureCallback: (LongListProvider<FeedItem> provider, List<ToExposureItem> exposureList) {
           exposureList.forEach((item) {
             print('上报数据：${provider.list[id][item.index].color} ${item.index} ${item.time}');

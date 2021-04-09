@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_long_list/src/widgets/loading_error.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import '../store/long_list_provider.dart';
@@ -33,6 +34,8 @@ class LongList<T extends Clone<T>> extends StatefulWidget {
   final Function exposureCallback;
   final bool needRefresh;
   final Widget loading;
+  final Widget loadingError;
+  final Widget error;
   final Function(bool init) nomore;
   final Widget sliverAppBar;
   final Widget sliverHead;
@@ -52,6 +55,8 @@ class LongList<T extends Clone<T>> extends StatefulWidget {
     this.padding = const EdgeInsets.all(0.0),
     this.needRefresh = true,
     this.loading,
+    this.loadingError,
+    this.error,
     this.nomore,
     this.controller,
     this.gridDelegate,
@@ -146,7 +151,10 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
                 child: widget.nomore,
               );
             } else if (data.item4) {
-              return LongListError<T>(id: widget.id);
+              return LongListError<T>(
+                id: widget.id,
+                child: widget.error,
+              );
             } else {
               return LongListLoading(
                 position: LoadingPosition.center,
@@ -172,12 +180,12 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
       scrollDirection: widget.scrollDirection,
       gridDelegate: widget.gridDelegate,
       padding: widget.padding,
-      itemCount: (data.item2 || !data.item3) ? data.item1 + 1 : data.item1,
+      itemCount: (data.item2 || !data.item3 || data.item4) ? data.item1 + 1 : data.item1,
       sliverAppBar: widget.sliverAppBar,
       sliverHead: widget.sliverHead,
       sliverChildren: widget.sliverChildren,
       child: (context, index) {
-        if (!data.item3 && _provider.list[widget.id].length == index) {
+        if (!data.item3 && data.item1 == index) {
           return LongListNoMore(
             child: widget.nomore
           );
@@ -185,6 +193,11 @@ class _LongListWidgetState<T extends Clone<T>> extends State<LongList<T>> {
           return LongListLoading(
             position: LoadingPosition.bottom,
             child: widget.loading,
+          );
+        } else if (data.item4 && data.item1 == index) {
+          return LongListLoadingError<T>(
+            id: widget.id,
+            child: widget.loadingError,
           );
         } else {
           return Selector<LongListProvider<T>, T>(

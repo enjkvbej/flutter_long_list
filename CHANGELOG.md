@@ -69,3 +69,9 @@
 ### 2.add sliver_tabbar_view demo
 
 ### 3.add `needRfresh` param
+
+## [0.1.6] 2021-04-09
+
+### 1.add `LongListData` type
+
+### 2.add loadingError & error params

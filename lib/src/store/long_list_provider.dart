@@ -1,6 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show ChangeNotifier, GlobalKey;
 
+class LongListData {
+  /// list数据
+  final List<dynamic> list;
+  /// list总数
+  final int total;
+  /// list是否更多标志位
+  final bool hasMore;
+  /// list加载错误标志位
+  final dynamic error;
+  LongListData({this.list, this.total, this.hasMore, this.error});
+}
 /* 
  * 通用列表数据
  * 1._hashMapList添加list id唯一标识
@@ -21,7 +32,7 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
   init(
       {@required String id,
       @required int pageSize,
-      @required Function request,
+      @required Future<LongListData> Function(int) request,
       Function callback}) async {
         if (_hashMapList[id] == null) {
           _hashMapList[id] = [];
@@ -37,16 +48,20 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
       _listConfig[id].isLoading = true;
       notifyListeners();
     }
-    final result = await _listConfig[id].request(_listConfig[id].offset);
-    if (result['list'] != null &&
-        result['total'] != null &&
-        result['error'] == null) {
-      _listConfig[id].total = result['total'];
-      if (result['total'] == result['list'].length + _hashMapList[id].length) {
-        _listConfig[id].hasMore = false;
+    LongListData result = await _listConfig[id].request(_listConfig[id].offset);
+    if (result.list != null && result.error == null) {
+      if (result.hasMore != null) {
+        _listConfig[id].hasMore = result.hasMore;
+      } else {
+        if (result.total != null) {
+          _listConfig[id].total = result.total;
+          if (result.total == result.list.length + _hashMapList[id].length) {
+            _listConfig[id].hasMore = false;
+          }
+        }
       }
       _listConfig[id].isLoading = false;
-      addItems(id, result['list']);
+      addItems(id, result.list);
     } else {
       _listConfig[id].hasError = true;
       _listConfig[id].isLoading = false;
@@ -84,6 +99,15 @@ class LongListProvider<T extends Clone<T>> with ChangeNotifier {
       _listConfig[id].hasMore = true;
       _listConfig[id].hasError = false;
       _hashMapList[id].clear();
+      await _getList(id);
+    } else {
+      print('list id${id}没有初始化');
+    }
+  }
+
+  /// 加载重试
+  reLoadMore(String id) async {
+    if (_checkId(id)) {
       await _getList(id);
     } else {
       print('list id${id}没有初始化');
@@ -148,7 +172,7 @@ class LongListConfig {
   int offset;
   int total;
   int pageSize;
-  Function request;
+  Future<LongListData> Function(int) request;
   Function callback;
   bool isLoading;
   bool hasMore;

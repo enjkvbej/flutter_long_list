@@ -30,18 +30,15 @@ class _SliverCustomViewDemoState extends State<SliverCustomViewDemo> {
     );
   }
   
-  _getList(int offset) async{
-    final result = await api(0, 5);
-    print(result);
+  Future<LongListData> _getList(int offset) async{
+    final result = await api(0, 10);
     if (result['list'] != null) {
-      return {
-        'list': result['list'],
-        'total': result['total']
-      };
+      return LongListData(
+        list: result['list'],
+        total: result['total']
+      );
     } else {
-      return {
-        'error': 'error'
-      };
+      return LongListData(error: 'error');
     }
   }
 
